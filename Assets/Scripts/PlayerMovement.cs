@@ -5,9 +5,19 @@ using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
+    [Header("References")]
+    [SerializeField] Collider2D groundCollider;
+    [SerializeField] Collider2D hitCollider;
+
+    [Header("Movement")]
     [SerializeField] float runSpeed = 10f;
     [SerializeField] float jumpSpeed = 5f;
     [SerializeField] float climbSpeed = 5f;
+    [SerializeField] float groundDistance = .1f;
+        // This margin is used to shrink the ground check cast box by a small amount on each side so that it doesn't detect walls as ground.
+    [SerializeField] float groundboxMargin = 0.1f;
+    [SerializeField] float maxAccelerateFrames = 10f;
+
     // [SerializeField] GameObject bullet;
     // [SerializeField] Transform gun;
 
@@ -15,19 +25,19 @@ public class PlayerMovement : MonoBehaviour
     Rigidbody2D playerRigidBody;
     Animator playerAnimator;
     CapsuleCollider2D playerCollider;
-    // BoxCollider2D playerFeetCollider;
+
+
     float playerGravity;
     bool isAlive = true;
-    bool jumped = false;
-    bool playJump = false;
-    bool canRun = true;
+    bool jumpInput = false;
+    bool grounded = true;
+    float accelerateFrames = 0f;
     
     void Start()
     {
         playerRigidBody = GetComponent<Rigidbody2D>();
         playerAnimator = GetComponent<Animator>();
         playerCollider = GetComponent<CapsuleCollider2D>();
-        // playerFeetCollider = GetComponent<BoxCollider2D>();
         playerGravity = playerRigidBody.gravityScale;
     }
 
@@ -35,6 +45,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (!isAlive) return;
 
+        grounded = GroundCheck();
         HandleJump();
         HandleMove();
         FlipSprite();
@@ -56,10 +67,8 @@ public class PlayerMovement : MonoBehaviour
         if (!isAlive) return;
 
         // Checking if we were touching the ground layer seems unreliable here.
-        if (value.isPressed) {
-            // playerRigidBody.velocity += new Vector2(0f, jumpSpeed);
-            jumped = true;
-            canRun = false;
+        if (value.isPressed && grounded) {
+            jumpInput = true;
         }
     }
 
@@ -72,64 +81,72 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    void HandleMove() 
-    {
-        // Can also use AddForce to move a rigidbody in a way that will work with the physics module better
-        Vector2 playerVelocity = new Vector2(moveInput.x * runSpeed, playerRigidBody.velocity.y);
-        playerRigidBody.velocity = playerVelocity;
-        // if (Mathf.Abs(playerRigidBody.velocity.x) <= Mathf.Epsilon) {
-        //     Debug.Log("Zero Velocity");
-        // }
+    private bool GroundCheck() {
+
+        // Check grounded by casting a box downward and checking for collisions.  
+        Vector3 extents = groundCollider.bounds.extents;
+        Vector2 size = groundCollider.bounds.size;
+        Vector3 center = groundCollider.bounds.center;
+        RaycastHit2D raycastHit = Physics2D.BoxCast(new Vector2(center.x, center.y - extents.y/2), new Vector2(size.x - (2 * groundboxMargin), extents.y), 0f, Vector2.down, groundDistance, LayerMask.GetMask("Ground"));
+
+        // The rest of this just draws an informative box for the debugger
+        Color debugColor = raycastHit.collider != null ? Color.cyan : Color.red;
+        Debug.DrawRay(center + new Vector3(extents.x - groundboxMargin, 0), Vector2.down * (extents.y + groundDistance), debugColor);
+        Debug.DrawRay(center - new Vector3(extents.x - groundboxMargin, 0), Vector2.down * (extents.y + groundDistance), debugColor);
+        Debug.DrawRay(center - new Vector3(extents.x - groundboxMargin, extents.y + groundDistance), Vector2.right * (size.x - groundboxMargin * 2), debugColor);
+
+        return raycastHit.collider != null;
     }
 
-    void HandleJump() {
-        if (jumped && playerCollider.IsTouchingLayers(LayerMask.GetMask("Ground"))) {
+    private void HandleMove() 
+    {
+        if (Mathf.Abs(moveInput.x) <= Mathf.Epsilon && grounded) {
+            playerRigidBody.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezeRotation;
+        } else {
+            playerRigidBody.constraints = RigidbodyConstraints2D.FreezeRotation;
+            // When we switch direction we take a few frames to accelerate back to top speed to help with bouncing when change direction on a slope
+            if (accelerateFrames > 0) --accelerateFrames;
+            float adjustedRunSpeed = runSpeed * (1 - accelerateFrames/maxAccelerateFrames);
+            playerRigidBody.velocity = new Vector2(moveInput.x * adjustedRunSpeed, playerRigidBody.velocity.y);
+        }
+    }
+
+    private void HandleJump() {
+        if (jumpInput) {
+            // Need this line so y velocity from going uphill doesn't get amplified by a jump
             playerRigidBody.velocity = new Vector2(playerRigidBody.velocity.x, 0);
             playerRigidBody.AddForce(new Vector2(0, jumpSpeed), ForceMode2D.Impulse);
-            jumped = false;
-            playJump = true;
+            jumpInput = false;
         }
     }
 
-    void SetAnimation() {
-        bool touchingGround = playerCollider.IsTouchingLayers(LayerMask.GetMask("Ground"));
-        bool touchingLadder = playerCollider.IsTouchingLayers(LayerMask.GetMask("Ladder"));
+    private void SetAnimation() {
+        bool touchingLadder = hitCollider.IsTouchingLayers(LayerMask.GetMask("Ladder"));
         bool hasXSpeed = Mathf.Abs(playerRigidBody.velocity.x) > Mathf.Epsilon;
         bool hasYSpeed = Mathf.Abs(playerRigidBody.velocity.y) > Mathf.Epsilon;
-        // if (hasYSpeed && !touchingGround && !touchingLadder) {
-        //     Debug.Log($"Jumping ySpeed: {playerRigidBody.velocity.y} touchingGround: {touchingGround} touchingLadder: {touchingLadder}");
-        // }
         playerAnimator.SetFloat("xVelocity", hasXSpeed ? playerRigidBody.velocity.x : 0);
         playerAnimator.SetFloat("yVelocity", hasYSpeed ? playerRigidBody.velocity.y : 0);
-        // Wait until we are off the ground to play the animation so we can check for touching ground to leave the jump state
-        if (playJump && !touchingGround) {
-            playerAnimator.SetBool("isJumping", true);
-            playJump = false;
-        }
-        if (touchingGround && !playJump) {
-            playerAnimator.SetBool("isJumping", false);
-            canRun = true;
-        }
-        bool isRunning = canRun && Mathf.Abs(moveInput.x) > Mathf.Epsilon;
-        // Player walking on uneven surface says he's not touching ground
-        // if (!touchingGround && hasXSpeed) {
-        //     Debug.Log($"Not Running touchingGround: {touchingGround} xspeed: {moveInput.x}");
-        // }
-        playerAnimator.SetBool("isRunning", isRunning);
-        playerAnimator.SetBool("isClimbing", hasYSpeed && !touchingGround && touchingLadder);
+        playerAnimator.SetBool("isJumping", !grounded && !touchingLadder);
+        playerAnimator.SetBool("isRunning", grounded && Mathf.Abs(moveInput.x) > Mathf.Epsilon);
+        playerAnimator.SetBool("isClimbing", hasYSpeed && !grounded && touchingLadder);
     }
 
-    void FlipSprite() 
+    private void FlipSprite() 
     {
         bool playerHasHorizontalSpeed = Mathf.Abs(playerRigidBody.velocity.x) > Mathf.Epsilon;
         if (playerHasHorizontalSpeed)
         {
             // Check the transform section of the player game object, set the Scale field to the sign of the velocity
-            transform.localScale = new Vector2 (Mathf.Sign(playerRigidBody.velocity.x), 1f);
+            if (Mathf.Sign(playerRigidBody.velocity.x) != Mathf.Sign(transform.localScale.x)) {
+                // We are switching direction.  Slow the sprite for a few frames to stop the bounce on slopes.
+                accelerateFrames = maxAccelerateFrames;
+
+                transform.localScale = new Vector2 (Mathf.Sign(playerRigidBody.velocity.x), 1f);
+            }
         }
     }
 
-    void Climb() {
+    private void Climb() {
         // Check if the move input up or down direction are pressed.  If so and we are touching a ladder, climb.
         if (!playerCollider.IsTouchingLayers(LayerMask.GetMask("Ladder"))) {
             playerRigidBody.gravityScale = playerGravity;
@@ -142,7 +159,7 @@ public class PlayerMovement : MonoBehaviour
 
     }
     
-    void Die() {
+    private void Die() {
         // if (playerCollider.IsTouchingLayers(LayerMask.GetMask("Enemies", "Hazards"))) {
         //     isAlive = false;
         //     playerAnimator.SetTrigger("Dying");
@@ -151,18 +168,3 @@ public class PlayerMovement : MonoBehaviour
     }
 
 }
-
-/*
-    Figuring out the state of the character.  
-    - Jumping has y velocity up and not touching the ground with the feet collider.  
-    - Falling has y velocity down and not touching the ground with the feet collider.  
-    - Running has x velocity right or left.  
-    - Flipped sprite has x velocity left for running and jumping.
-    - Climbing is touching a climb surface and not touching the ground with the feet collider and not jumping/falling.
-    - Climbing and looking left/right has left/right input.
-    - Climbing and not falling requires touching a climb surface.
-
-    Requirements
-    - Knowing vertical and horizontal speed on each update.
-    - Know if touching a climbable surface and/or if feet touching ground. 
-*/
