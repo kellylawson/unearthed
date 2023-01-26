@@ -22,12 +22,11 @@ public class PlayerMovement : MonoBehaviour
     // [SerializeField] Transform gun;
 
     Vector2 moveInput;
-    Rigidbody2D playerRigidBody;
-    Animator playerAnimator;
-    CapsuleCollider2D playerCollider;
+    Rigidbody2D spriteRigidBody;
+    Animator spriteAnimator;
 
 
-    float playerGravity;
+    float spriteGravity;
     bool isAlive = true;
     bool jumpInput = false;
     bool grounded = true;
@@ -35,10 +34,9 @@ public class PlayerMovement : MonoBehaviour
     
     void Start()
     {
-        playerRigidBody = GetComponent<Rigidbody2D>();
-        playerAnimator = GetComponent<Animator>();
-        playerCollider = GetComponent<CapsuleCollider2D>();
-        playerGravity = playerRigidBody.gravityScale;
+        spriteRigidBody = GetComponent<Rigidbody2D>();
+        spriteAnimator = GetComponent<Animator>();
+        spriteGravity = spriteRigidBody.gravityScale;
     }
 
     void FixedUpdate()
@@ -101,66 +99,66 @@ public class PlayerMovement : MonoBehaviour
     private void HandleMove() 
     {
         if (Mathf.Abs(moveInput.x) <= Mathf.Epsilon && grounded) {
-            playerRigidBody.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezeRotation;
+            spriteRigidBody.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezeRotation;
         } else {
-            playerRigidBody.constraints = RigidbodyConstraints2D.FreezeRotation;
+            spriteRigidBody.constraints = RigidbodyConstraints2D.FreezeRotation;
             // When we switch direction we take a few frames to accelerate back to top speed to help with bouncing when change direction on a slope
             if (accelerateFrames > 0) --accelerateFrames;
             float adjustedRunSpeed = runSpeed * (1 - accelerateFrames/maxAccelerateFrames);
-            playerRigidBody.velocity = new Vector2(moveInput.x * adjustedRunSpeed, playerRigidBody.velocity.y);
+            spriteRigidBody.velocity = new Vector2(moveInput.x * adjustedRunSpeed, spriteRigidBody.velocity.y);
         }
     }
 
     private void HandleJump() {
         if (jumpInput) {
             // Need this line so y velocity from going uphill doesn't get amplified by a jump
-            playerRigidBody.velocity = new Vector2(playerRigidBody.velocity.x, 0);
-            playerRigidBody.AddForce(new Vector2(0, jumpSpeed), ForceMode2D.Impulse);
+            spriteRigidBody.velocity = new Vector2(spriteRigidBody.velocity.x, 0);
+            spriteRigidBody.AddForce(new Vector2(0, jumpSpeed), ForceMode2D.Impulse);
             jumpInput = false;
         }
     }
 
     private void SetAnimation() {
         bool touchingLadder = hitCollider.IsTouchingLayers(LayerMask.GetMask("Ladder"));
-        bool hasXSpeed = Mathf.Abs(playerRigidBody.velocity.x) > Mathf.Epsilon;
-        bool hasYSpeed = Mathf.Abs(playerRigidBody.velocity.y) > Mathf.Epsilon;
-        playerAnimator.SetFloat("xVelocity", hasXSpeed ? playerRigidBody.velocity.x : 0);
-        playerAnimator.SetFloat("yVelocity", hasYSpeed ? playerRigidBody.velocity.y : 0);
-        playerAnimator.SetBool("isJumping", !grounded && !touchingLadder);
-        playerAnimator.SetBool("isRunning", grounded && Mathf.Abs(moveInput.x) > Mathf.Epsilon);
-        playerAnimator.SetBool("isClimbing", hasYSpeed && !grounded && touchingLadder);
+        bool hasXSpeed = Mathf.Abs(spriteRigidBody.velocity.x) > Mathf.Epsilon;
+        bool hasYSpeed = Mathf.Abs(spriteRigidBody.velocity.y) > Mathf.Epsilon;
+        spriteAnimator.SetFloat("xVelocity", hasXSpeed ? spriteRigidBody.velocity.x : 0);
+        spriteAnimator.SetFloat("yVelocity", hasYSpeed ? spriteRigidBody.velocity.y : 0);
+        spriteAnimator.SetBool("isJumping", !grounded && !touchingLadder);
+        spriteAnimator.SetBool("isRunning", grounded && Mathf.Abs(moveInput.x) > Mathf.Epsilon);
+        spriteAnimator.SetBool("isClimbing", hasYSpeed && !grounded && touchingLadder);
     }
 
     private void FlipSprite() 
     {
-        bool playerHasHorizontalSpeed = Mathf.Abs(playerRigidBody.velocity.x) > Mathf.Epsilon;
-        if (playerHasHorizontalSpeed)
+        bool spriteHasHorizontalSpeed = Mathf.Abs(spriteRigidBody.velocity.x) > Mathf.Epsilon;
+        if (spriteHasHorizontalSpeed)
         {
             // Check the transform section of the player game object, set the Scale field to the sign of the velocity
-            if (Mathf.Sign(playerRigidBody.velocity.x) != Mathf.Sign(transform.localScale.x)) {
+            if (Mathf.Sign(spriteRigidBody.velocity.x) != Mathf.Sign(transform.localScale.x)) {
                 // We are switching direction.  Slow the sprite for a few frames to stop the bounce on slopes.
                 accelerateFrames = maxAccelerateFrames;
 
-                transform.localScale = new Vector2 (Mathf.Sign(playerRigidBody.velocity.x), 1f);
+                transform.localScale = new Vector2 (Mathf.Sign(spriteRigidBody.velocity.x), 1f);
             }
         }
     }
 
     private void Climb() {
         // Check if the move input up or down direction are pressed.  If so and we are touching a ladder, climb.
-        if (!playerCollider.IsTouchingLayers(LayerMask.GetMask("Ladder"))) {
-            playerRigidBody.gravityScale = playerGravity;
+        if (!hitCollider.IsTouchingLayers(LayerMask.GetMask("Ladder"))) {
+            spriteRigidBody.gravityScale = spriteGravity;
             return;
         }
 
-        Vector2 playerClimbVelocity = new Vector2(playerRigidBody.velocity.x, moveInput.y * climbSpeed);
-        playerRigidBody.velocity = playerClimbVelocity;
-        playerRigidBody.gravityScale = 0f;
+        Vector2 playerClimbVelocity = new Vector2(spriteRigidBody.velocity.x, moveInput.y * climbSpeed);
+        spriteRigidBody.velocity = playerClimbVelocity;
+        spriteRigidBody.gravityScale = 0f;
 
     }
     
     private void Die() {
-        // if (playerCollider.IsTouchingLayers(LayerMask.GetMask("Enemies", "Hazards"))) {
+        // if (hitCollider.IsTouchingLayers(LayerMask.GetMask("Enemies", "Hazards"))) {
         //     isAlive = false;
         //     playerAnimator.SetTrigger("Dying");
         //     // FindObjectOfType<GameSession>().ProcessPlayerDeath();
