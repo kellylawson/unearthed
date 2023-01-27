@@ -41,24 +41,42 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
-  - name: Far Background
+  - name: Layer-6
     uniqueID: 3083723379
     locked: 0
-  - name: Mid Background
+  - name: Layer-5
     uniqueID: 2141288183
     locked: 0
-  - name: Close Background
+  - name: Layer-4
     uniqueID: 596892955
     locked: 0
-  - name: Background
+  - name: Layer-3
     uniqueID: 3787046145
     locked: 0
-  - name: Ground
+  - name: Layer-2
     uniqueID: 417508959
     locked: 0
-  - name: Player
+  - name: Layer-1
     uniqueID: 3114080931
     locked: 0
-  - name: Foreground
+  - name: Layer 0
     uniqueID: 3088260001
+    locked: 0
+  - name: Layer+1
+    uniqueID: 2338513627
+    locked: 0
+  - name: Layer+2
+    uniqueID: 1475568679
+    locked: 0
+  - name: Layer+3
+    uniqueID: 1604886977
+    locked: 0
+  - name: Layer+4
+    uniqueID: 1857912467
+    locked: 0
+  - name: Layer+5
+    uniqueID: 126650317
+    locked: 0
+  - name: Layer+6
+    uniqueID: 216991925
     locked: 0
