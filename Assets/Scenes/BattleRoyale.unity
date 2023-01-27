@@ -2822,7 +2822,6 @@ MonoBehaviour:
   groundLayers: Ground
   groundDistance: 0.2
   groundboxMargin: 0.03
-  maxAccelerateFrames: 5
   slopeCheckDistance: 0.5
 --- !u!95 &1817512139
 Animator:

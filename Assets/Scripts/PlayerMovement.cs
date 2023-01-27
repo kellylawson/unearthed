@@ -14,11 +14,10 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float jumpSpeed = 5f;
     [SerializeField] int maxJumpForgiveness = 5;
     [SerializeField] float climbSpeed = 5f;
-    [SerializeField] string groundLayers;
+    [SerializeField] string groundLayers = "Ground";
     [SerializeField] float groundDistance = .1f;
     // This margin is used to shrink the ground check cast box by a small amount on each side so that it doesn't detect walls as ground.
     [SerializeField] float groundboxMargin = 0.1f;
-    [SerializeField] float maxAccelerateFrames = 10f;
     [SerializeField] float slopeCheckDistance = 0.5f;
 
     // [SerializeField] GameObject bullet;
@@ -36,14 +35,10 @@ public class PlayerMovement : MonoBehaviour
     int framesToHandleJump = 0;
     bool grounded = true;
     int groundMask = 0;
-    float accelerateFrames = 0f;
-    Vector2 slopeNormalPerp;
+    Vector2 slopeDirection;
     float slopeDownAngle;
-    float slopeDownAngleOld = 0f;
-    float slopeSideAngle;
     bool onSlope = false;
     Vector2 newVelocity = Vector2.zero;
-    bool flippedSprite = false;
     
     void Start()
     {
@@ -97,60 +92,25 @@ public class PlayerMovement : MonoBehaviour
     private void SlopeCheck() {
         Vector2 checkPosition = groundCollider.bounds.center - new Vector3(0, groundCollider.bounds.size.y / 2);
 
-        SlopeCheckVertical(checkPosition);
-        SlopeCheckHorizontal(checkPosition);
-    }
-
-    private void SlopeCheckVertical(Vector2 checkPosition) {
         RaycastHit2D hit = Physics2D.Raycast(checkPosition, Vector2.down, slopeCheckDistance, groundMask);
         Debug.DrawRay(checkPosition, Vector2.down * slopeCheckDistance, Color.yellow, 1f);
 
         if (hit) {
-            slopeNormalPerp = Vector2.Perpendicular(hit.normal).normalized;
+            slopeDirection = Vector2.Perpendicular(hit.normal).normalized;
             slopeDownAngle = Vector2.Angle(hit.normal, Vector2.up);
 
-            if (slopeDownAngle != slopeDownAngleOld) {
+            if (slopeDownAngle != 0.0f) {
                 onSlope = true;
+            } else {
+                onSlope = false;
             }
-            slopeDownAngleOld = slopeDownAngle;
 
-            Debug.DrawRay(hit.point, slopeNormalPerp, Color.magenta);
+            Debug.DrawRay(hit.point, slopeDirection, Color.magenta);
             Debug.DrawRay(hit.point, hit.normal, Color.green);
         }
     }
 
-    private void SlopeCheckHorizontal(Vector2 checkPosition) {
-        RaycastHit2D slopeHitFront = Physics2D.Raycast(checkPosition, transform.right, slopeCheckDistance, groundMask);
-        RaycastHit2D slopeHitBack = Physics2D.Raycast(checkPosition, -transform.right, slopeCheckDistance, groundMask);
-
-        if (slopeHitFront) {
-            onSlope = true;
-            slopeSideAngle = Vector2.Angle(slopeHitFront.normal, Vector2.up);
-        } else if (slopeHitBack) {
-            onSlope = true;
-            slopeSideAngle = Vector2.Angle(slopeHitBack.normal, Vector2.up);
-        } else {
-            slopeSideAngle = 0.0f;
-            onSlope = false;
-        }
-    }
-
     private void GroundCheck() {
-
-        // // Check grounded by casting a box downward and checking for collisions.  
-        // Vector3 extents = groundCollider.bounds.extents;
-        // Vector2 size = groundCollider.bounds.size;
-        // Vector3 center = groundCollider.bounds.center;
-        // RaycastHit2D raycastHit = Physics2D.BoxCast(new Vector2(center.x, center.y - extents.y/2), new Vector2(size.x - (2 * groundboxMargin), extents.y), 0f, Vector2.down, groundDistance, groundMask);
-
-        // // The rest of this just draws an informative box for the debugger
-        // Color debugColor = raycastHit.collider != null ? Color.cyan : Color.red;
-        // Debug.DrawRay(center + new Vector3(extents.x - groundboxMargin, 0), Vector2.down * (extents.y + groundDistance), debugColor);
-        // Debug.DrawRay(center - new Vector3(extents.x - groundboxMargin, 0), Vector2.down * (extents.y + groundDistance), debugColor);
-        // Debug.DrawRay(center - new Vector3(extents.x - groundboxMargin, extents.y + groundDistance), Vector2.right * (size.x - groundboxMargin * 2), debugColor);
-        // // Debug.DrawRay(raycastHit.point, raycastHit.normal, Color.green);
-
-        // grounded = raycastHit.collider != null;
 
         Vector3 extents = groundCollider.bounds.extents;
         Vector3 center = groundCollider.bounds.center;
@@ -158,6 +118,7 @@ public class PlayerMovement : MonoBehaviour
         Vector3 circleOrigin = center - new Vector3(0, extents.y - extents.x + groundDistance);
         grounded = Physics2D.OverlapCircle(circleOrigin, radius, groundMask);
 
+        // Draw some debug lines to show the ground check result
         Color debugColor = grounded ? Color.cyan : Color.red;
         Debug.DrawRay(circleOrigin, Vector2.left *  radius, debugColor);
         Vector2 diagLeft = Vector2.left + Vector2.down;
@@ -169,6 +130,7 @@ public class PlayerMovement : MonoBehaviour
         Debug.DrawRay(circleOrigin, diagRight * radius, debugColor);
         Debug.DrawRay(circleOrigin, Vector2.right * radius, debugColor);
 
+        // If we are moving downward or neutral, cancel the jump
         if (spriteRigidBody.velocity.y <= 0.0f) {
             jumping = false;
         }
@@ -178,6 +140,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (Mathf.Abs(moveInput.x) <= Mathf.Epsilon && grounded) {
             spriteRigidBody.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezeRotation;
+            // Check to see if we have just stopped.  This contains a bounce when stopping on a slope
             if (Mathf.Abs(newVelocity.x) > Mathf.Epsilon && onSlope) {
                 newVelocity = Vector2.zero;
                 spriteRigidBody.constraints |= RigidbodyConstraints2D.FreezePositionY;
@@ -186,18 +149,12 @@ public class PlayerMovement : MonoBehaviour
             spriteRigidBody.constraints = RigidbodyConstraints2D.FreezeRotation;
 
             newVelocity = new Vector2(runSpeed * moveInput.x, spriteRigidBody.velocity.y);
-            // if (grounded && !onSlope && !jumping) {
-            //     newVelocity.Set(runSpeed * moveInput.x, 0.0f);
-            // } else 
             if (grounded && onSlope && !jumping) {
-                newVelocity.Set(runSpeed * slopeNormalPerp.x * -moveInput.x, runSpeed * slopeNormalPerp.y * -moveInput.x);
+                newVelocity.Set(runSpeed * slopeDirection.x * -moveInput.x, runSpeed * slopeDirection.y * -moveInput.x);
             }
 
             spriteRigidBody.velocity = newVelocity;
-
         }
-        // Consider this handled
-        flippedSprite = true;
 
     }
 
@@ -234,9 +191,6 @@ public class PlayerMovement : MonoBehaviour
         {
             // Check the transform section of the player game object, set the Scale field to the sign of the velocity
             if (Mathf.Sign(spriteRigidBody.velocity.x) != Mathf.Sign(transform.localScale.x)) {
-                // We are switching direction.  Slow the sprite for a few frames to stop the bounce on slopes.
-                flippedSprite = true;
-
                 transform.localScale = new Vector2 (Mathf.Sign(spriteRigidBody.velocity.x), 1f);
             }
         }
