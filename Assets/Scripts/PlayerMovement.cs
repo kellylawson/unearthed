@@ -17,7 +17,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] string groundLayers = "Ground";
     [SerializeField] float groundDistance = .1f;
     // This margin is used to shrink the ground check cast box by a small amount on each side so that it doesn't detect walls as ground.
-    [SerializeField] float groundboxMargin = 0.1f;
+    [SerializeField] float groundcheckMargin = 0.1f;
     [SerializeField] float slopeCheckDistance = 0.5f;
 
     // [SerializeField] GameObject bullet;
@@ -39,6 +39,8 @@ public class PlayerMovement : MonoBehaviour
     float slopeDownAngle;
     bool onSlope = false;
     Vector2 newVelocity = Vector2.zero;
+    bool triggerLightAttack = false;
+    bool triggerHeavyAttack = false;
     
     void Start()
     {
@@ -59,7 +61,7 @@ public class PlayerMovement : MonoBehaviour
         FlipSprite();
         Climb();
         Die();
-        SetAnimation();
+        SetAnimationFlags();
     }
 
     void OnMove(InputValue value) 
@@ -89,6 +91,18 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    void OnLightAttack() {
+        if (!isAlive) return;
+
+        triggerLightAttack = true;
+    }
+
+    void OnHeavyAttack() {
+        if (!isAlive) return;
+
+        triggerHeavyAttack = true;
+    }
+
     private void SlopeCheck() {
         Vector2 checkPosition = groundCollider.bounds.center - new Vector3(0, groundCollider.bounds.size.y / 2);
 
@@ -114,7 +128,7 @@ public class PlayerMovement : MonoBehaviour
 
         Vector3 extents = groundCollider.bounds.extents;
         Vector3 center = groundCollider.bounds.center;
-        float radius = extents.x - groundboxMargin;
+        float radius = extents.x - groundcheckMargin;
         Vector3 circleOrigin = center - new Vector3(0, extents.y - extents.x + groundDistance);
         grounded = Physics2D.OverlapCircle(circleOrigin, radius, groundMask);
 
@@ -173,7 +187,7 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    private void SetAnimation() {
+    private void SetAnimationFlags() {
         bool touchingLadder = hitCollider.IsTouchingLayers(LayerMask.GetMask("Ladder"));
         bool hasXSpeed = Mathf.Abs(spriteRigidBody.velocity.x) > Mathf.Epsilon;
         bool hasYSpeed = Mathf.Abs(spriteRigidBody.velocity.y) > Mathf.Epsilon;
@@ -182,6 +196,14 @@ public class PlayerMovement : MonoBehaviour
         spriteAnimator.SetBool("isJumping", !grounded && !touchingLadder);
         spriteAnimator.SetBool("isRunning", grounded && Mathf.Abs(moveInput.x) > Mathf.Epsilon);
         spriteAnimator.SetBool("isClimbing", hasYSpeed && !grounded && touchingLadder);
+        if (triggerLightAttack) {
+            spriteAnimator.SetTrigger("closeLightAttack");
+            triggerLightAttack = false;
+        }
+        if (triggerHeavyAttack) {
+            spriteAnimator.SetTrigger("closeHeavyAttack");
+            triggerHeavyAttack = false;
+        }
     }
 
     private void FlipSprite() 
