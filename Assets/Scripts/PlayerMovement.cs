@@ -19,6 +19,7 @@ public class PlayerMovement : MonoBehaviour
     // This margin is used to shrink the ground check cast box by a small amount on each side so that it doesn't detect walls as ground.
     [SerializeField] float groundcheckMargin = 0.1f;
     [SerializeField] float slopeCheckDistance = 0.5f;
+    [SerializeField] GameObject dagger;
 
     // [SerializeField] GameObject bullet;
     // [SerializeField] Transform gun;

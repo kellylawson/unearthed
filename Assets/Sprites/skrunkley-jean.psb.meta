@@ -7394,5 +7394,3 @@ ScriptedImporter:
   secondarySpriteTextures:
   - name: _NormalMap
     texture: {fileID: -8328923581568760697, guid: dea094c6f1c4240d0aed4adf2a39d8b5, type: 3}
-  - name: _Emission
-    texture: {fileID: -8328923581568760697, guid: c8642fb2ec60b4d80be7ef735da31ce0, type: 3}
