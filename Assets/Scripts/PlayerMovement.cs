@@ -19,7 +19,18 @@ public class PlayerMovement : MonoBehaviour
     // This margin is used to shrink the ground check cast box by a small amount on each side so that it doesn't detect walls as ground.
     [SerializeField] float groundcheckMargin = 0.1f;
     [SerializeField] float slopeCheckDistance = 0.5f;
-    [SerializeField] GameObject dagger;
+    [SerializeField] float lightAttackTimer = .5f;
+    [SerializeField] float heavyAttackTimer = .7f;
+
+    [Header("Effects")]
+    [SerializeField] ParticleSystem lightAttackEffect;
+    [SerializeField] ParticleSystem heavyAttackEffect;
+    [SerializeField] GameObject leftWeaponBone;
+    [SerializeField] GameObject rightWeaponBone;
+    [SerializeField] GameObject leftWeaponSprite;
+    [SerializeField] GameObject rightWeaponSprite;
+    [SerializeField] Material defaultMaterial;
+    [SerializeField] Material glowMaterial;
 
     // [SerializeField] GameObject bullet;
     // [SerializeField] Transform gun;
@@ -42,6 +53,13 @@ public class PlayerMovement : MonoBehaviour
     Vector2 newVelocity = Vector2.zero;
     bool triggerLightAttack = false;
     bool triggerHeavyAttack = false;
+    TrailRenderer leftTrailRenderer;
+    TrailRenderer rightTrailRenderer;
+    bool renderWeaponTrail = false;
+    SpriteRenderer leftWeaponSpriteRenderer;
+    SpriteRenderer rightWeaponSpriteRenderer;
+    float attackTimer = -1;
+    
     
     void Start()
     {
@@ -49,6 +67,12 @@ public class PlayerMovement : MonoBehaviour
         spriteAnimator = GetComponent<Animator>();
         spriteGravity = spriteRigidBody.gravityScale;
         groundMask = LayerMask.GetMask(groundLayers);
+        leftTrailRenderer = leftWeaponBone.GetComponent<TrailRenderer>();
+        rightTrailRenderer = rightWeaponBone.GetComponent<TrailRenderer>();
+        leftWeaponSpriteRenderer = leftWeaponSprite.GetComponent<SpriteRenderer>();
+        rightWeaponSpriteRenderer = rightWeaponSprite.GetComponent<SpriteRenderer>();
+
+        DeactivateWeaponTrail();
     }
 
     void FixedUpdate()
@@ -59,6 +83,7 @@ public class PlayerMovement : MonoBehaviour
         SlopeCheck();
         HandleJump();
         HandleMove();
+        HandleAttack();
         FlipSprite();
         Climb();
         Die();
@@ -95,14 +120,22 @@ public class PlayerMovement : MonoBehaviour
     void OnLightAttack() {
         if (!isAlive) return;
 
-        triggerLightAttack = true;
+        if (attackTimer <= 0) {
+            triggerLightAttack = true;
+            attackTimer = lightAttackTimer;
+        }
     }
 
     void OnHeavyAttack() {
         if (!isAlive) return;
 
-        triggerHeavyAttack = true;
+        if (attackTimer <= 0) {
+            triggerHeavyAttack = true;
+            attackTimer = heavyAttackTimer;
+        }
+
     }
+
 
     private void SlopeCheck() {
         Vector2 checkPosition = groundCollider.bounds.center - new Vector3(0, groundCollider.bounds.size.y / 2);
@@ -226,9 +259,9 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
-        Vector2 playerClimbVelocity = new Vector2(spriteRigidBody.velocity.x, moveInput.y * climbSpeed);
-        spriteRigidBody.velocity = playerClimbVelocity;
-        spriteRigidBody.gravityScale = 0f;
+        // Vector2 playerClimbVelocity = new Vector2(spriteRigidBody.velocity.x, moveInput.y * climbSpeed);
+        // spriteRigidBody.velocity = playerClimbVelocity;
+        // spriteRigidBody.gravityScale = 0f;
 
     }
     
@@ -238,6 +271,39 @@ public class PlayerMovement : MonoBehaviour
         //     playerAnimator.SetTrigger("Dying");
         //     // FindObjectOfType<GameSession>().ProcessPlayerDeath();
         // }
+    }
+
+    private void HandleAttack() {
+        attackTimer -= Time.deltaTime;
+    }
+
+    void LightAttackEffect() {
+        if (lightAttackEffect != null) {
+            lightAttackEffect.Play();
+        }
+    }
+
+    void HeavyAttackEffect() {
+        if (heavyAttackEffect != null) {
+            heavyAttackEffect.Play();
+        }
+    }
+
+    void ActivateWeaponTrail() {
+        Debug.Log("Activate weapons trail");
+        leftTrailRenderer.forceRenderingOff = false;
+        rightTrailRenderer.forceRenderingOff = false;
+        rightWeaponSpriteRenderer.material = glowMaterial;
+        leftWeaponSpriteRenderer.material = glowMaterial;
+        
+    }
+
+    void DeactivateWeaponTrail() {
+        Debug.Log("Deactivate weapons trail");
+        leftTrailRenderer.forceRenderingOff = true;
+        rightTrailRenderer.forceRenderingOff = true;
+        rightWeaponSpriteRenderer.material = defaultMaterial;
+        leftWeaponSpriteRenderer.material = defaultMaterial;
     }
 
 }
