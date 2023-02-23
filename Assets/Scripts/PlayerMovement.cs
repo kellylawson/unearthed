@@ -13,7 +13,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float runSpeed = 10f;
     [SerializeField] float jumpSpeed = 5f;
     [SerializeField] int maxJumpForgiveness = 5;
-    [SerializeField] float climbSpeed = 5f;
+    // [SerializeField] float climbSpeed = 5f;
     [SerializeField] string groundLayers = "Ground";
     [SerializeField] float groundDistance = .1f;
     // This margin is used to shrink the ground check cast box by a small amount on each side so that it doesn't detect walls as ground.
@@ -25,12 +25,12 @@ public class PlayerMovement : MonoBehaviour
     [Header("Effects")]
     [SerializeField] ParticleSystem lightAttackEffect;
     [SerializeField] ParticleSystem heavyAttackEffect;
-    [SerializeField] GameObject leftWeaponBone;
-    [SerializeField] GameObject rightWeaponBone;
     [SerializeField] GameObject leftWeaponSprite;
     [SerializeField] GameObject rightWeaponSprite;
     [SerializeField] Material defaultMaterial;
     [SerializeField] Material glowMaterial;
+    [SerializeField] ParticleSystem rightWeaponEffect;
+    [SerializeField] ParticleSystem leftWeaponEffect;
 
     // [SerializeField] GameObject bullet;
     // [SerializeField] Transform gun;
@@ -53,9 +53,6 @@ public class PlayerMovement : MonoBehaviour
     Vector2 newVelocity = Vector2.zero;
     bool triggerLightAttack = false;
     bool triggerHeavyAttack = false;
-    TrailRenderer leftTrailRenderer;
-    TrailRenderer rightTrailRenderer;
-    bool renderWeaponTrail = false;
     SpriteRenderer leftWeaponSpriteRenderer;
     SpriteRenderer rightWeaponSpriteRenderer;
     float attackTimer = -1;
@@ -67,12 +64,11 @@ public class PlayerMovement : MonoBehaviour
         spriteAnimator = GetComponent<Animator>();
         spriteGravity = spriteRigidBody.gravityScale;
         groundMask = LayerMask.GetMask(groundLayers);
-        leftTrailRenderer = leftWeaponBone.GetComponent<TrailRenderer>();
-        rightTrailRenderer = rightWeaponBone.GetComponent<TrailRenderer>();
         leftWeaponSpriteRenderer = leftWeaponSprite.GetComponent<SpriteRenderer>();
         rightWeaponSpriteRenderer = rightWeaponSprite.GetComponent<SpriteRenderer>();
 
-        DeactivateWeaponTrail();
+        DeactivateRightWeaponTrail();
+        DeactivateLeftWeaponTrail();
     }
 
     void FixedUpdate()
@@ -248,8 +244,17 @@ public class PlayerMovement : MonoBehaviour
             // Check the transform section of the player game object, set the Scale field to the sign of the velocity
             if (Mathf.Sign(spriteRigidBody.velocity.x) != Mathf.Sign(transform.localScale.x)) {
                 transform.localScale = new Vector2 (Mathf.Sign(spriteRigidBody.velocity.x), 1f);
+                ParticleSystemRenderer renderer = lightAttackEffect.GetComponent<ParticleSystemRenderer>();
+                renderer.flip = new Vector3(spriteRigidBody.velocity.x < 0.0f ? 1 : 0, renderer.flip.y, renderer.flip.z);
+                FlipWeaponEffect(leftWeaponEffect);
+                FlipWeaponEffect(rightWeaponEffect);
             }
         }
+    }
+
+    private void FlipWeaponEffect(ParticleSystem effect) {
+        var shape = effect.shape;
+        shape.scale = new Vector3(Mathf.Sign(spriteRigidBody.velocity.x), 1f, 0f);
     }
 
     private void Climb() {
@@ -289,20 +294,21 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    void ActivateWeaponTrail() {
-        Debug.Log("Activate weapons trail");
-        leftTrailRenderer.forceRenderingOff = false;
-        rightTrailRenderer.forceRenderingOff = false;
+    void ActivateRightWeaponTrail() {
+        rightWeaponEffect.Play();
         rightWeaponSpriteRenderer.material = glowMaterial;
-        leftWeaponSpriteRenderer.material = glowMaterial;
-        
     }
 
-    void DeactivateWeaponTrail() {
-        Debug.Log("Deactivate weapons trail");
-        leftTrailRenderer.forceRenderingOff = true;
-        rightTrailRenderer.forceRenderingOff = true;
+    void DeactivateRightWeaponTrail() {
         rightWeaponSpriteRenderer.material = defaultMaterial;
+    }
+
+    void ActivateLeftWeaponTrail() {
+        leftWeaponEffect.Play();
+        leftWeaponSpriteRenderer.material = glowMaterial;
+    }
+
+    void DeactivateLeftWeaponTrail() {
         leftWeaponSpriteRenderer.material = defaultMaterial;
     }
 
