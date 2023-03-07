@@ -3516,7 +3516,14 @@ AnimationClip:
   m_HasMotionFloatCurves: 0
   m_Events:
   - time: 0.016666668
-    functionName: ActivateWeaponTrail
+    functionName: ActivateRightWeaponTrail
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 0.033333335
+    functionName: ActivateLeftWeaponTrail
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
@@ -3529,8 +3536,15 @@ AnimationClip:
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
+  - time: 0.45
+    functionName: DeactivateRightWeaponTrail
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
   - time: 0.46666667
-    functionName: DeactivateWeaponTrail
+    functionName: DeactivateLeftWeaponTrail
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
