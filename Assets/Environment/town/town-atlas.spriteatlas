@@ -1,0 +1,77 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: town-atlas
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 0
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings:
+    - serializedVersion: 3
+      m_BuildTarget: DefaultTexturePlatform
+      m_MaxTextureSize: 8192
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: -1
+      m_TextureCompression: 1
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 0
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 0
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 1
+      enableTightPacking: 0
+      enableAlphaDilation: 0
+    secondaryTextureSettings: {}
+    variantMultiplier: 1
+    packables:
+    - {fileID: 102900000, guid: e7df708d627f949af911fa1a4c8b0d3a, type: 3}
+    - {fileID: 102900000, guid: a4b167d47f3d04dcd944b0f66d9136ae, type: 3}
+    bindAsDefault: 1
+    isAtlasV2: 0
+    cachedData: {fileID: 0}
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: 74dc1417b2aaa414e901a1c7fcebe76f, type: 3}
+  - {fileID: 21300000, guid: ebeea05a2cb4a4acbab94b3f13ecd782, type: 3}
+  - {fileID: 21300000, guid: 074096a7dfc8744d3b37e8d7e5591b6b, type: 3}
+  - {fileID: 21300000, guid: 4cf888e4638fa48d087999f114950fb8, type: 3}
+  - {fileID: 21300000, guid: 2a529a62d599f488aaa20c06fe100b06, type: 3}
+  - {fileID: 21300000, guid: a889a0e2681b64b14b11a42c6772c217, type: 3}
+  - {fileID: 21300000, guid: f68302d4c06d24a04ac5ef4fcfba1295, type: 3}
+  - {fileID: 21300000, guid: f2399b606a5db41ada07821cf42e746b, type: 3}
+  - {fileID: 21300000, guid: f2d8810160c22407ca9348795848080f, type: 3}
+  - {fileID: 21300000, guid: 250c149e599fc434f9ed20e4d2fa61fb, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - unearthed-sky
+  - dirt-fill
+  - dead-tree
+  - row-house-partial
+  - lamppost
+  - manor
+  - graveyard-wall
+  - brick
+  - hanging-roots
+  - low-wall
+  m_RenderDataMap: {}
+  m_Tag: town-atlas
+  m_IsVariant: 0
