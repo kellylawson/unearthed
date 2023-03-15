@@ -13,41 +13,51 @@ MonoBehaviour:
   m_Name: cobbles
   m_EditorClassIdentifier: 
   m_Angles:
-  - m_Start: -102
-    m_End: 102
+  - m_Start: -51
+    m_End: 54
     m_Order: 0
     m_Sprites:
     - {fileID: 21300000, guid: f2399b606a5db41ada07821cf42e746b, type: 3}
-  - m_Start: 102
-    m_End: 258
+  - m_Start: 134
+    m_End: 227
     m_Order: 0
     m_Sprites:
     - {fileID: 21300000, guid: f2d8810160c22407ca9348795848080f, type: 3}
+  - m_Start: -132
+    m_End: -51
+    m_Order: 0
+    m_Sprites:
+    - {fileID: 21300000, guid: 7c02f865bcbf24634a7867361a57fad2, type: 3}
+  - m_Start: 54
+    m_End: 134
+    m_Order: 0
+    m_Sprites:
+    - {fileID: 21300000, guid: 7c02f865bcbf24634a7867361a57fad2, type: 3}
   m_FillTexture: {fileID: 2800000, guid: ebeea05a2cb4a4acbab94b3f13ecd782, type: 3}
   m_CornerSprites:
   - m_CornerType: 0
     m_Sprites:
-    - {fileID: 21300000, guid: f2399b606a5db41ada07821cf42e746b, type: 3}
+    - {fileID: 21300000, guid: 7e825a7b1a96243bd9a87335deb3099d, type: 3}
   - m_CornerType: 1
     m_Sprites:
-    - {fileID: 21300000, guid: f2399b606a5db41ada07821cf42e746b, type: 3}
+    - {fileID: 21300000, guid: c0fa4b757ba1a4f13a609dc253230182, type: 3}
   - m_CornerType: 2
     m_Sprites:
-    - {fileID: 21300000, guid: f2399b606a5db41ada07821cf42e746b, type: 3}
+    - {fileID: 21300000, guid: 460ac722242384273bdd9841a2ce0456, type: 3}
   - m_CornerType: 3
     m_Sprites:
-    - {fileID: 21300000, guid: f2399b606a5db41ada07821cf42e746b, type: 3}
+    - {fileID: 21300000, guid: b674e4578cbc1452198c6d6a4334bf46, type: 3}
   - m_CornerType: 4
     m_Sprites:
-    - {fileID: 21300000, guid: f2399b606a5db41ada07821cf42e746b, type: 3}
+    - {fileID: 0}
   - m_CornerType: 5
     m_Sprites:
-    - {fileID: 21300000, guid: f2399b606a5db41ada07821cf42e746b, type: 3}
+    - {fileID: 0}
   - m_CornerType: 6
     m_Sprites:
-    - {fileID: 21300000, guid: f2399b606a5db41ada07821cf42e746b, type: 3}
+    - {fileID: 0}
   - m_CornerType: 7
     m_Sprites:
-    - {fileID: 21300000, guid: f2399b606a5db41ada07821cf42e746b, type: 3}
+    - {fileID: 0}
   m_FillOffset: 0
   m_UseSpriteBorders: 1

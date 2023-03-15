@@ -54,10 +54,15 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 74dc1417b2aaa414e901a1c7fcebe76f, type: 3}
   - {fileID: 21300000, guid: ebeea05a2cb4a4acbab94b3f13ecd782, type: 3}
   - {fileID: 21300000, guid: 074096a7dfc8744d3b37e8d7e5591b6b, type: 3}
+  - {fileID: 21300000, guid: b674e4578cbc1452198c6d6a4334bf46, type: 3}
   - {fileID: 21300000, guid: 4cf888e4638fa48d087999f114950fb8, type: 3}
+  - {fileID: 21300000, guid: c0fa4b757ba1a4f13a609dc253230182, type: 3}
   - {fileID: 21300000, guid: 2a529a62d599f488aaa20c06fe100b06, type: 3}
+  - {fileID: 21300000, guid: 460ac722242384273bdd9841a2ce0456, type: 3}
   - {fileID: 21300000, guid: a889a0e2681b64b14b11a42c6772c217, type: 3}
+  - {fileID: 21300000, guid: 7c02f865bcbf24634a7867361a57fad2, type: 3}
   - {fileID: 21300000, guid: f68302d4c06d24a04ac5ef4fcfba1295, type: 3}
+  - {fileID: 21300000, guid: 7e825a7b1a96243bd9a87335deb3099d, type: 3}
   - {fileID: 21300000, guid: f2399b606a5db41ada07821cf42e746b, type: 3}
   - {fileID: 21300000, guid: f2d8810160c22407ca9348795848080f, type: 3}
   - {fileID: 21300000, guid: 250c149e599fc434f9ed20e4d2fa61fb, type: 3}
@@ -65,10 +70,15 @@ SpriteAtlas:
   - unearthed-sky
   - dirt-fill
   - dead-tree
+  - lower-right-corner
   - row-house-partial
+  - upper-right-corner
   - lamppost
+  - lower-left-corner
   - manor
+  - left-vertical-surface
   - graveyard-wall
+  - upper-left-corner
   - brick
   - hanging-roots
   - low-wall
