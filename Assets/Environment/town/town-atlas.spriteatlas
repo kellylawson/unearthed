@@ -62,6 +62,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: a889a0e2681b64b14b11a42c6772c217, type: 3}
   - {fileID: 21300000, guid: 7c02f865bcbf24634a7867361a57fad2, type: 3}
   - {fileID: 21300000, guid: f68302d4c06d24a04ac5ef4fcfba1295, type: 3}
+  - {fileID: 21300000, guid: 445f23fbe89d6482aa1612536e0663f3, type: 3}
   - {fileID: 21300000, guid: 7e825a7b1a96243bd9a87335deb3099d, type: 3}
   - {fileID: 21300000, guid: f2399b606a5db41ada07821cf42e746b, type: 3}
   - {fileID: 21300000, guid: f2d8810160c22407ca9348795848080f, type: 3}
@@ -78,6 +79,7 @@ SpriteAtlas:
   - manor
   - left-vertical-surface
   - graveyard-wall
+  - river-rock-wall
   - upper-left-corner
   - brick
   - hanging-roots

@@ -4,20 +4,22 @@ using UnityEngine;
 
 public class MoveBackground : MonoBehaviour
 {
-    float startPosition;
+    Vector2 startPosition;
     private Renderer spriteRenderer;
-    [SerializeField] private float parallaxEffect;
+    [SerializeField] private float parallaxEffectX = 0f;
+    [SerializeField] private float parallaxEffectY = 0f;
 
     void Start()
     {
-        startPosition = transform.position.x;
+        startPosition = transform.position;
         spriteRenderer = GetComponent<Renderer>();
     }
 
     void FixedUpdate()
     {
-        float distance = Camera.main.transform.position.x * parallaxEffect;
+        float distanceX = Camera.main.transform.position.x * parallaxEffectX;
+        float distanceY = Camera.main.transform.position.y * parallaxEffectY;
         // Debug.Log($"Background Layer Order {spriteRenderer?.sortingOrder} Camera X: {followCamera?.transform.position.x}, distance: {distance}, start position: {startPosition}");
-        transform.position = new Vector3(startPosition + distance, transform.position.y, transform.position.z);
+        transform.position = new Vector3(startPosition.x + distanceX, startPosition.y + distanceY, transform.position.z);
     }
 }
