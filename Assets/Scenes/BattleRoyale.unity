@@ -205,9 +205,9 @@ EdgeCollider2D:
   - {x: 7.313789, y: 0.77956855}
   - {x: 7.9178295, y: 0.7292321}
   - {x: 17.642479, y: -3.087683}
-  - {x: 39.755436, y: -3.2706635}
-  - {x: 39.813484, y: -4.699252}
-  - {x: 39.578453, y: -4.8902893}
+  - {x: 40.05277, y: -3.2793827}
+  - {x: 40.063133, y: -4.672853}
+  - {x: 39.83794, y: -4.8651133}
   - {x: 34.85168, y: -4.870851}
   - {x: 10.262016, y: -4.645569}
   - {x: 10.120807, y: -4.4522676}
@@ -315,7 +315,7 @@ MonoBehaviour:
       spriteIndex: 0
       corner: 1
       m_CornerMode: 1
-    - position: {x: 39.693977, y: -3.3341455, z: 0}
+    - position: {x: 39.989235, y: -3.3428297, z: 0}
       leftTangent: {x: 0, y: 0, z: 0}
       rightTangent: {x: 0, y: 0, z: 0}
       mode: 0
@@ -325,7 +325,7 @@ MonoBehaviour:
       spriteIndex: 0
       corner: 1
       m_CornerMode: 1
-    - position: {x: 39.74682, y: -4.6349797, z: 0}
+    - position: {x: 39.998657, y: -4.6089272, z: 0}
       leftTangent: {x: 0, y: 0, z: 0}
       rightTangent: {x: 0, y: 0, z: 0}
       mode: 0
@@ -440,8 +440,8 @@ SpriteShapeRenderer:
   - {fileID: 0}
   - {fileID: 0}
   m_LocalAABB:
-    m_Center: {x: 14.628176, y: -2.1511955, z: 0}
-    m_Extent: {x: 25.2853, y: 3.1230907, z: 0}
+    m_Center: {x: 14.751364, y: -2.1421113, z: 0}
+    m_Extent: {x: 25.408487, y: 3.114006, z: 0}
 --- !u!4 &67341300 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3097015021258749599, guid: c9fc19571549f4f3c89fe797ec0c1b41, type: 3}
@@ -16125,6 +16125,86 @@ MonoBehaviour:
       spriteIndex: 0
       corner: 1
       m_CornerMode: 1
+    - position: {x: 47.251232, y: -0.1916399, z: 0}
+      leftTangent: {x: 0, y: 0, z: 0}
+      rightTangent: {x: 0, y: 0, z: 0}
+      mode: 0
+      height: 1
+      bevelCutoff: 0
+      bevelSize: 0
+      spriteIndex: 0
+      corner: 1
+      m_CornerMode: 1
+    - position: {x: 47.204914, y: 7.1035385, z: 0}
+      leftTangent: {x: 0.01543808, y: -2.4317265, z: 0}
+      rightTangent: {x: 0.0051231384, y: 1.3848076, z: 0}
+      mode: 2
+      height: 1
+      bevelCutoff: 0
+      bevelSize: 0
+      spriteIndex: 0
+      corner: 1
+      m_CornerMode: 1
+    - position: {x: 45.5546, y: 8.536488, z: 0}
+      leftTangent: {x: 0, y: 0, z: 0}
+      rightTangent: {x: 0, y: 0, z: 0}
+      mode: 0
+      height: 1
+      bevelCutoff: 0
+      bevelSize: 0
+      spriteIndex: 0
+      corner: 1
+      m_CornerMode: 1
+    - position: {x: 45.548622, y: 9.766855, z: 0}
+      leftTangent: {x: 0, y: 0, z: 0}
+      rightTangent: {x: 0, y: 0, z: 0}
+      mode: 0
+      height: 1
+      bevelCutoff: 0
+      bevelSize: 0
+      spriteIndex: 0
+      corner: 1
+      m_CornerMode: 1
+    - position: {x: 52.574146, y: 9.742256, z: 0}
+      leftTangent: {x: 0, y: 0, z: 0}
+      rightTangent: {x: 0, y: 0, z: 0}
+      mode: 0
+      height: 1
+      bevelCutoff: 0
+      bevelSize: 0
+      spriteIndex: 0
+      corner: 1
+      m_CornerMode: 1
+    - position: {x: 52.60634, y: 8.501422, z: 0}
+      leftTangent: {x: 0, y: 0, z: 0}
+      rightTangent: {x: 0, y: 0, z: 0}
+      mode: 0
+      height: 1
+      bevelCutoff: 0
+      bevelSize: 0
+      spriteIndex: 0
+      corner: 1
+      m_CornerMode: 1
+    - position: {x: 51.04936, y: 7.080378, z: 0}
+      leftTangent: {x: -0.010437012, y: 1.3529267, z: 0}
+      rightTangent: {x: 0.000011444092, y: -2.446323, z: 0}
+      mode: 2
+      height: 1
+      bevelCutoff: 0
+      bevelSize: 0
+      spriteIndex: 0
+      corner: 1
+      m_CornerMode: 1
+    - position: {x: 51.049393, y: -0.25859022, z: 0}
+      leftTangent: {x: 0, y: 0, z: 0}
+      rightTangent: {x: 0, y: 0, z: 0}
+      mode: 0
+      height: 1
+      bevelCutoff: 0
+      bevelSize: 0
+      spriteIndex: 0
+      corner: 1
+      m_CornerMode: 1
     - position: {x: 55.116795, y: -0.2649336, z: 0}
       leftTangent: {x: 0, y: 0, z: 0}
       rightTangent: {x: 0, y: 0, z: 0}
@@ -16216,8 +16296,8 @@ SpriteShapeRenderer:
   - {fileID: 21300000, guid: 608e61deb05c54660bebf5a4dd2ee02d, type: 3}
   - {fileID: 21300000, guid: 608e61deb05c54660bebf5a4dd2ee02d, type: 3}
   m_LocalAABB:
-    m_Center: {x: 26.131681, y: -1.1939497, z: 0}
-    m_Extent: {x: 29.098116, y: 2.858451, z: 0}
+    m_Center: {x: 26.131681, y: 2.8572273, z: 0}
+    m_Extent: {x: 29.098116, y: 6.909628, z: 0}
 --- !u!4 &2109056028 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3097015021258749599, guid: c9fc19571549f4f3c89fe797ec0c1b41, type: 3}
