@@ -63,8 +63,10 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 7c02f865bcbf24634a7867361a57fad2, type: 3}
   - {fileID: 21300000, guid: f68302d4c06d24a04ac5ef4fcfba1295, type: 3}
   - {fileID: 21300000, guid: 445f23fbe89d6482aa1612536e0663f3, type: 3}
+  - {fileID: 21300000, guid: a7d54820896a4406ea5773e3188cbd41, type: 3}
   - {fileID: 21300000, guid: 7e825a7b1a96243bd9a87335deb3099d, type: 3}
   - {fileID: 21300000, guid: f2399b606a5db41ada07821cf42e746b, type: 3}
+  - {fileID: 21300000, guid: cecddbda773b54614a892bb912563d16, type: 3}
   - {fileID: 21300000, guid: f2d8810160c22407ca9348795848080f, type: 3}
   - {fileID: 21300000, guid: 250c149e599fc434f9ed20e4d2fa61fb, type: 3}
   m_PackedSpriteNamesToIndex:
@@ -80,8 +82,10 @@ SpriteAtlas:
   - left-vertical-surface
   - graveyard-wall
   - river-rock-wall
+  - light-brick
   - upper-left-corner
   - brick
+  - light-brick-sq
   - hanging-roots
   - low-wall
   m_RenderDataMap: {}
