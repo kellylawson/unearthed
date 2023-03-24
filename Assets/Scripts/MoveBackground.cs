@@ -19,7 +19,6 @@ public class MoveBackground : MonoBehaviour
     {
         float distanceX = Camera.main.transform.position.x * parallaxEffectX;
         float distanceY = Camera.main.transform.position.y * parallaxEffectY;
-        // Debug.Log($"Background Layer Order {spriteRenderer?.sortingOrder} Camera X: {followCamera?.transform.position.x}, distance: {distance}, start position: {startPosition}");
         transform.position = new Vector3(startPosition.x + distanceX, startPosition.y + distanceY, transform.position.z);
     }
 }
