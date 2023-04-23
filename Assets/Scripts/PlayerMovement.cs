@@ -13,14 +13,23 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float runSpeed = 10f;
     [SerializeField] float jumpSpeed = 5f;
     [SerializeField] int maxJumpForgiveness = 5;
-    // [SerializeField] float climbSpeed = 5f;
-    [SerializeField] string groundLayers = "Ground";
+    [SerializeField] LayerMask groundMask;
     [SerializeField] float groundDistance = .1f;
     // This margin is used to shrink the ground check cast box by a small amount on each side so that it doesn't detect walls as ground.
     [SerializeField] float groundcheckMargin = 0.1f;
     [SerializeField] float slopeCheckDistance = 0.5f;
+
+    [Header("Attack")]
     [SerializeField] float lightAttackTimer = .5f;
     [SerializeField] float heavyAttackTimer = .7f;
+    [SerializeField] float attackRange = .5f;
+    [SerializeField] Transform attackPoint;
+    [SerializeField] LayerMask enemyMask;
+    [SerializeField] int lightAttackDamage = 25;
+    [SerializeField] int heavyAttackDamage = 40;
+
+    [Header("Health")]
+    [SerializeField] float maxHealth = 500f;
 
     [Header("Effects")]
     [SerializeField] ParticleSystem lightAttackEffect;
@@ -31,9 +40,6 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] Material glowMaterial;
     [SerializeField] ParticleSystem rightWeaponEffect;
     [SerializeField] ParticleSystem leftWeaponEffect;
-
-    // [SerializeField] GameObject bullet;
-    // [SerializeField] Transform gun;
 
     Vector2 moveInput;
     Rigidbody2D spriteRigidBody;
@@ -46,7 +52,6 @@ public class PlayerMovement : MonoBehaviour
     bool jumping = true;
     int framesToHandleJump = 0;
     bool grounded = true;
-    int groundMask = 0;
     Vector2 slopeDirection;
     float slopeDownAngle;
     bool onSlope = false;
@@ -56,6 +61,10 @@ public class PlayerMovement : MonoBehaviour
     SpriteRenderer leftWeaponSpriteRenderer;
     SpriteRenderer rightWeaponSpriteRenderer;
     float attackTimer = -1;
+    float health;
+    Vector2 damagedFrom;
+    bool knockBack = false;
+    bool damageTaken = false;
 
 
     void Start()
@@ -63,9 +72,10 @@ public class PlayerMovement : MonoBehaviour
         spriteRigidBody = GetComponent<Rigidbody2D>();
         spriteAnimator = GetComponent<Animator>();
         spriteGravity = spriteRigidBody.gravityScale;
-        groundMask = LayerMask.GetMask(groundLayers);
         leftWeaponSpriteRenderer = leftWeaponSprite.GetComponent<SpriteRenderer>();
         rightWeaponSpriteRenderer = rightWeaponSprite.GetComponent<SpriteRenderer>();
+        health = maxHealth;
+        damagedFrom = Vector2.zero;
 
         DeactivateRightWeaponTrail();
         DeactivateLeftWeaponTrail();
@@ -80,23 +90,19 @@ public class PlayerMovement : MonoBehaviour
         HandleJump();
         HandleMove();
         HandleAttack();
-        FlipSprite();
+        HandleKnockBack();
         Climb();
-        Die();
-        SetAnimationFlags();
+        HandleAnimation();
     }
 
     void OnMove(InputValue value)
     {
-        if (!isAlive) return;
-
         moveInput = value.Get<Vector2>();
-        // Debug.Log(moveInput);
     }
 
     void OnJump(InputValue value)
     {
-        if (!isAlive) return;
+        if (!isAlive || knockBack) return;
 
         if (value.isPressed)
         {
@@ -117,7 +123,7 @@ public class PlayerMovement : MonoBehaviour
 
     void OnLightAttack()
     {
-        if (!isAlive) return;
+        if (!isAlive || knockBack) return;
 
         if (attackTimer <= 0)
         {
@@ -128,7 +134,7 @@ public class PlayerMovement : MonoBehaviour
 
     void OnHeavyAttack()
     {
-        if (!isAlive) return;
+        if (!isAlive || knockBack) return;
 
         if (attackTimer <= 0)
         {
@@ -137,6 +143,14 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    private void OnDrawGizmosSelected()
+    {
+        if (attackPoint)
+        {
+            Gizmos.DrawWireSphere(attackPoint.position, attackRange);
+        }
+
+    }
 
     private void SlopeCheck()
     {
@@ -194,6 +208,8 @@ public class PlayerMovement : MonoBehaviour
 
     private void HandleMove()
     {
+        if (!isAlive || knockBack) return;
+
         if (Mathf.Abs(moveInput.x) <= Mathf.Epsilon && grounded)
         {
             spriteRigidBody.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezeRotation;
@@ -204,7 +220,7 @@ public class PlayerMovement : MonoBehaviour
                 spriteRigidBody.constraints |= RigidbodyConstraints2D.FreezePositionY;
             }
         }
-        else
+        else if (Mathf.Abs(moveInput.x) > Mathf.Epsilon)
         {
             spriteRigidBody.constraints = RigidbodyConstraints2D.FreezeRotation;
 
@@ -215,6 +231,10 @@ public class PlayerMovement : MonoBehaviour
             }
 
             spriteRigidBody.velocity = newVelocity;
+            if (Mathf.Sign(moveInput.x) != Mathf.Sign(transform.localScale.x))
+            {
+                FlipSprite();
+            }
         }
 
     }
@@ -240,7 +260,34 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    private void SetAnimationFlags()
+    private void HandleAttack()
+    {
+        attackTimer -= Time.deltaTime;
+    }
+
+    private void HandleKnockBack()
+    {
+        if (knockBack && !grounded)
+        {
+            damageTaken = true;
+        }
+        if (damageTaken && grounded)
+        {
+            knockBack = false;
+            damageTaken = false;
+        }
+        if (damagedFrom == Vector2.zero) return;
+
+        // Allow non-input based movement, we disable x movement not related to player input in HandleMove
+        spriteRigidBody.constraints = RigidbodyConstraints2D.FreezeRotation;
+        spriteRigidBody.velocity = Vector2.zero;
+        damagedFrom.y = 1f;
+        spriteRigidBody.AddForce(new Vector2(4, 10) * damagedFrom, ForceMode2D.Impulse);
+        damagedFrom = Vector2.zero;
+        knockBack = true;
+    }
+
+    private void HandleAnimation()
     {
         bool touchingLadder = hitCollider.IsTouchingLayers(LayerMask.GetMask("Ladder"));
         bool hasXSpeed = Mathf.Abs(spriteRigidBody.velocity.x) > Mathf.Epsilon;
@@ -262,29 +309,6 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    private void FlipSprite()
-    {
-        bool spriteHasHorizontalSpeed = Mathf.Abs(spriteRigidBody.velocity.x) > Mathf.Epsilon;
-        if (spriteHasHorizontalSpeed)
-        {
-            // Check the transform section of the player game object, set the Scale field to the sign of the velocity
-            if (Mathf.Sign(spriteRigidBody.velocity.x) != Mathf.Sign(transform.localScale.x))
-            {
-                transform.localScale = new Vector2(Mathf.Sign(spriteRigidBody.velocity.x), 1f);
-                ParticleSystemRenderer renderer = lightAttackEffect.GetComponent<ParticleSystemRenderer>();
-                renderer.flip = new Vector3(spriteRigidBody.velocity.x < 0.0f ? 1 : 0, renderer.flip.y, renderer.flip.z);
-                FlipWeaponEffect(leftWeaponEffect);
-                FlipWeaponEffect(rightWeaponEffect);
-            }
-        }
-    }
-
-    private void FlipWeaponEffect(ParticleSystem effect)
-    {
-        var shape = effect.shape;
-        shape.scale = new Vector3(Mathf.Sign(spriteRigidBody.velocity.x), 1f, 0f);
-    }
-
     private void Climb()
     {
         // Check if the move input up or down direction are pressed.  If so and we are touching a ladder, climb.
@@ -293,25 +317,13 @@ public class PlayerMovement : MonoBehaviour
             spriteRigidBody.gravityScale = spriteGravity;
             return;
         }
-
-        // Vector2 playerClimbVelocity = new Vector2(spriteRigidBody.velocity.x, moveInput.y * climbSpeed);
-        // spriteRigidBody.velocity = playerClimbVelocity;
-        // spriteRigidBody.gravityScale = 0f;
-
     }
 
     private void Die()
     {
-        // if (hitCollider.IsTouchingLayers(LayerMask.GetMask("Enemies", "Hazards"))) {
-        //     isAlive = false;
-        //     playerAnimator.SetTrigger("Dying");
-        //     // FindObjectOfType<GameSession>().ProcessPlayerDeath();
-        // }
-    }
-
-    private void HandleAttack()
-    {
-        attackTimer -= Time.deltaTime;
+        spriteAnimator.SetTrigger("dead");
+        isAlive = false;
+        spriteRigidBody.velocity = Vector3.zero;
     }
 
     void LightAttackEffect()
@@ -319,6 +331,7 @@ public class PlayerMovement : MonoBehaviour
         if (lightAttackEffect != null)
         {
             lightAttackEffect.Play();
+            HitEnemies(lightAttackDamage);
         }
     }
 
@@ -327,6 +340,7 @@ public class PlayerMovement : MonoBehaviour
         if (heavyAttackEffect != null)
         {
             heavyAttackEffect.Play();
+            HitEnemies(heavyAttackDamage);
         }
     }
 
@@ -350,6 +364,43 @@ public class PlayerMovement : MonoBehaviour
     void DeactivateLeftWeaponTrail()
     {
         leftWeaponSpriteRenderer.material = defaultMaterial;
+    }
+
+    private void HitEnemies(int attackDamage)
+    {
+        Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, enemyMask);
+
+        foreach (Collider2D enemy in hitEnemies)
+        {
+            // here we call each enemy and damage them.
+            enemy.GetComponent<Enemy>().TakeDamage(attackDamage, Mathf.Sign(transform.localScale.x));
+        }
+
+    }
+
+    public void TakeDamage(float damage, float direction)
+    {
+        damagedFrom = direction < 0 ? Vector2.left : Vector2.right;
+        health -= damage;
+        if (health <= 0 && isAlive)
+        {
+            Die();
+        }
+    }
+
+    private void FlipSprite()
+    {
+        transform.localScale = new Vector2(Mathf.Sign(spriteRigidBody.velocity.x), 1f);
+        ParticleSystemRenderer renderer = lightAttackEffect.GetComponent<ParticleSystemRenderer>();
+        renderer.flip = new Vector3(spriteRigidBody.velocity.x < 0.0f ? 1 : 0, renderer.flip.y, renderer.flip.z);
+        FlipWeaponEffect(leftWeaponEffect);
+        FlipWeaponEffect(rightWeaponEffect);
+    }
+
+    private void FlipWeaponEffect(ParticleSystem effect)
+    {
+        var shape = effect.shape;
+        shape.scale = new Vector3(Mathf.Sign(spriteRigidBody.velocity.x), 1f, 0f);
     }
 
 }
