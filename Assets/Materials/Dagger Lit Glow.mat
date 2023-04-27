@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Player Lit Glow
+  m_Name: Dagger Lit Glow
   m_Shader: {fileID: -6465566751694194690, guid: 7af80a91afb7c446c894c5ba53c1f344, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
@@ -47,5 +47,5 @@ Material:
     m_Ints: []
     m_Floats: []
     m_Colors:
-    - _GlowColor: {r: 1343.0812, g: 1790.7748, b: 1509.869, a: 1}
+    - _GlowColor: {r: 3.9533484, g: 3.2289128, b: 2.6700625, a: 1}
   m_BuildTextureStacks: []

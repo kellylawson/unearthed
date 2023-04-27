@@ -330,7 +330,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (lightAttackEffect != null)
         {
-            lightAttackEffect.Play();
+            // lightAttackEffect.Play();
             HitEnemies(lightAttackDamage);
         }
     }
@@ -339,7 +339,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (heavyAttackEffect != null)
         {
-            heavyAttackEffect.Play();
+            // heavyAttackEffect.Play();
             HitEnemies(heavyAttackDamage);
         }
     }
@@ -399,8 +399,8 @@ public class PlayerMovement : MonoBehaviour
 
     private void FlipWeaponEffect(ParticleSystem effect)
     {
-        var shape = effect.shape;
-        shape.scale = new Vector3(Mathf.Sign(spriteRigidBody.velocity.x), 1f, 0f);
+        ParticleSystem.MainModule main = effect.main;
+        main.flipRotation = transform.localScale.x < 0.0f ? 1 : 0;
     }
 
 }
