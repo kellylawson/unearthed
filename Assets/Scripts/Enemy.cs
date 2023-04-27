@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
+    [Header("Damage")]
     [SerializeField] int maxHealth = 100;
+    [SerializeField] ParticleSystem attackEffect;
 
     int currentHealth;
     Animator animator;
@@ -23,6 +25,7 @@ public class Enemy : MonoBehaviour
     {
         currentHealth -= damage;
         tookDamage = true;
+        attackEffect.Play();
         damageDirection = direction > 0 ? Vector2.right : Vector2.left;
         if (currentHealth <= 0)
         {
