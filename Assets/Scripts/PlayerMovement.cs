@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Rendering.Universal;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -40,6 +41,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] Material glowMaterial;
     [SerializeField] ParticleSystem rightWeaponEffect;
     [SerializeField] ParticleSystem leftWeaponEffect;
+    [SerializeField] Light2D rightWeaponLight;
+    [SerializeField] Light2D leftWeaponLight;
 
     Vector2 moveInput;
     Rigidbody2D spriteRigidBody;
@@ -348,22 +351,26 @@ public class PlayerMovement : MonoBehaviour
     {
         rightWeaponEffect.Play();
         rightWeaponSpriteRenderer.material = glowMaterial;
+        rightWeaponLight.enabled = true;
     }
 
     void DeactivateRightWeaponTrail()
     {
         rightWeaponSpriteRenderer.material = defaultMaterial;
+        rightWeaponLight.enabled = false;
     }
 
     void ActivateLeftWeaponTrail()
     {
         leftWeaponEffect.Play();
         leftWeaponSpriteRenderer.material = glowMaterial;
+        leftWeaponLight.enabled = true;
     }
 
     void DeactivateLeftWeaponTrail()
     {
         leftWeaponSpriteRenderer.material = defaultMaterial;
+        leftWeaponLight.enabled = false;
     }
 
     private void HitEnemies(int attackDamage)
