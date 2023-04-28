@@ -33,8 +33,6 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float maxHealth = 500f;
 
     [Header("Effects")]
-    [SerializeField] ParticleSystem lightAttackEffect;
-    [SerializeField] ParticleSystem heavyAttackEffect;
     [SerializeField] GameObject leftWeaponSprite;
     [SerializeField] GameObject rightWeaponSprite;
     [SerializeField] Material defaultMaterial;
@@ -331,20 +329,12 @@ public class PlayerMovement : MonoBehaviour
 
     void LightAttackEffect()
     {
-        if (lightAttackEffect != null)
-        {
-            // lightAttackEffect.Play();
-            HitEnemies(lightAttackDamage);
-        }
+        HitEnemies(lightAttackDamage);
     }
 
     void HeavyAttackEffect()
     {
-        if (heavyAttackEffect != null)
-        {
-            // heavyAttackEffect.Play();
-            HitEnemies(heavyAttackDamage);
-        }
+        HitEnemies(heavyAttackDamage);
     }
 
     void ActivateRightWeaponTrail()
@@ -398,8 +388,6 @@ public class PlayerMovement : MonoBehaviour
     private void FlipSprite()
     {
         transform.localScale = new Vector2(Mathf.Sign(spriteRigidBody.velocity.x), 1f);
-        ParticleSystemRenderer renderer = lightAttackEffect.GetComponent<ParticleSystemRenderer>();
-        renderer.flip = new Vector3(spriteRigidBody.velocity.x < 0.0f ? 1 : 0, renderer.flip.y, renderer.flip.z);
         FlipWeaponEffect(leftWeaponEffect);
         FlipWeaponEffect(rightWeaponEffect);
     }

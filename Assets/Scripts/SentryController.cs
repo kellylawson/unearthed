@@ -40,28 +40,19 @@ public class SentryController : Enemy
 
     void FixedUpdate()
     {
-        Attack();
-        Move();
+        if (!dead)
+        {
+            HandleDamage();
+            Attack();
+            Move();
+        }
         HandleAnimation();
     }
 
     void Move()
     {
         movePauseTimer -= Time.deltaTime;
-        if (tookDamage)
-        {
-            velocity = 0;
-            // If the damaging sprite is attacking in the same direction this sprite is facing, flip this sprite
-            // Allow for sprites that face left by default
-            float spriteDirection = defaultFacingLeft ? -Mathf.Sign(transform.localScale.x) : Mathf.Sign(transform.localScale.x);
-            if (Mathf.Sign(damageDirection.x) == spriteDirection)
-            {
-                FlipSprite();
-            }
-            // Pause movement for a period when we are hit
-            movePauseTimer = damagePauseTimer;
-        }
-        else if (movePauseTimer <= 0)
+        if (movePauseTimer <= 0)
         {
             velocity = moveSpeed * Mathf.Sign(transform.localScale.x);
             // Just move the sprite in their normal pattern
@@ -97,6 +88,32 @@ public class SentryController : Enemy
         }
     }
 
+    void HandleDamage()
+    {
+        if (tookDamage)
+        {
+            // If the damaging sprite is attacking in the same direction this sprite is facing, flip this sprite
+            // Allow for sprites that face left by default
+            float spriteDirection = defaultFacingLeft ? -Mathf.Sign(transform.localScale.x) : Mathf.Sign(transform.localScale.x);
+            if (Mathf.Sign(damageDirection.x) == spriteDirection)
+            {
+                FlipSprite();
+            }
+            // Pause movement for a period when we are hit
+            movePauseTimer = damagePauseTimer;
+
+            //spriteRigidBody.velocity = Vector2.zero;
+            if (dead)
+            {
+                spriteRigidBody.constraints = RigidbodyConstraints2D.FreezePositionX;
+            }
+            else
+            {
+                spriteRigidBody.AddForce(new Vector2(200, 0) * damageDirection, ForceMode2D.Impulse);
+            }
+        }
+    }
+
     void HandleAnimation()
     {
         if (tookDamage)
@@ -107,7 +124,6 @@ public class SentryController : Enemy
         else if (dead)
         {
             spriteAnimator.SetBool("dead", true);
-            dead = false;
         }
         else if (triggerAttack)
         {
