@@ -62,10 +62,6 @@ public class SentryController : Enemy
                 FlipSprite();
             }
         }
-        else
-        {
-            velocity = 0;
-        }
         spriteRigidBody.velocity = new Vector2(velocity, spriteRigidBody.velocity.y);
     }
 
@@ -85,6 +81,7 @@ public class SentryController : Enemy
             triggerAttack = true;
             attackTimer = attackFrequencyTimer;
             movePauseTimer = attackPauseTimer;
+            velocity = 0;
         }
     }
 
@@ -102,14 +99,13 @@ public class SentryController : Enemy
             // Pause movement for a period when we are hit
             movePauseTimer = damagePauseTimer;
 
-            //spriteRigidBody.velocity = Vector2.zero;
             if (dead)
             {
                 spriteRigidBody.constraints = RigidbodyConstraints2D.FreezePositionX;
             }
             else
             {
-                spriteRigidBody.AddForce(new Vector2(200, 0) * damageDirection, ForceMode2D.Impulse);
+                velocity = -moveSpeed * Mathf.Sign(transform.localScale.x);
             }
         }
     }
