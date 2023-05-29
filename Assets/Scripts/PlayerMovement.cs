@@ -28,6 +28,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] LayerMask enemyMask;
     [SerializeField] int lightAttackDamage = 25;
     [SerializeField] int heavyAttackDamage = 40;
+    [SerializeField] ParticleSystem attackEffect;
 
     [Header("Health")]
     [SerializeField] float maxHealth = 500f;
@@ -329,11 +330,13 @@ public class PlayerMovement : MonoBehaviour
 
     void LightAttackEffect()
     {
+        attackEffect.Play();
         HitEnemies(lightAttackDamage);
     }
 
     void HeavyAttackEffect()
     {
+        attackEffect.Play();
         HitEnemies(heavyAttackDamage);
     }
 
@@ -342,12 +345,14 @@ public class PlayerMovement : MonoBehaviour
         rightWeaponEffect.Play();
         rightWeaponSpriteRenderer.material = glowMaterial;
         rightWeaponLight.enabled = true;
+        PauseGravity();
     }
 
     void DeactivateRightWeaponTrail()
     {
         rightWeaponSpriteRenderer.material = defaultMaterial;
         rightWeaponLight.enabled = false;
+        RestartGravity();
     }
 
     void ActivateLeftWeaponTrail()
@@ -355,12 +360,29 @@ public class PlayerMovement : MonoBehaviour
         leftWeaponEffect.Play();
         leftWeaponSpriteRenderer.material = glowMaterial;
         leftWeaponLight.enabled = true;
+        PauseGravity();
     }
 
     void DeactivateLeftWeaponTrail()
     {
         leftWeaponSpriteRenderer.material = defaultMaterial;
         leftWeaponLight.enabled = false;
+        RestartGravity();
+    }
+
+    void PauseGravity()
+    {
+        spriteRigidBody.gravityScale = 0;
+        if (spriteRigidBody.velocity.y <= 0)
+        {
+            // Divide the horizontal velocity by 2 to slow his movement every time he attacks
+            spriteRigidBody.velocity = new Vector3(spriteRigidBody.velocity.x / 3, 0, 0);
+        }
+    }
+
+    void RestartGravity()
+    {
+        spriteRigidBody.gravityScale = spriteGravity;
     }
 
     private void HitEnemies(int attackDamage)
@@ -388,6 +410,8 @@ public class PlayerMovement : MonoBehaviour
     private void FlipSprite()
     {
         transform.localScale = new Vector2(Mathf.Sign(spriteRigidBody.velocity.x), 1f);
+        // attackEffect.transform.localScale = new Vector3(Mathf.Sign(spriteRigidBody.velocity.x), 1f, 1f);
+        attackEffect.GetComponent<ParticleSystemRenderer>().flip = new Vector3(-Mathf.Sign(spriteRigidBody.velocity.x), 0, 0);
         FlipWeaponEffect(leftWeaponEffect);
         FlipWeaponEffect(rightWeaponEffect);
     }
