@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Flame
+  m_Name: Spark
   m_Shader: {fileID: -6465566751694194690, guid: e229db5938aa140d6ade3a69f8080dbe, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
@@ -25,15 +25,15 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _GlowTex:
-        m_Texture: {fileID: 2800000, guid: 64430cb3621fb4bca8ec39b7da097203, type: 3}
+        m_Texture: {fileID: 2800000, guid: 3c0ffac18f8d14021933af5cb81aec8b, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 64430cb3621fb4bca8ec39b7da097203, type: 3}
+        m_Texture: {fileID: 2800000, guid: 3c0ffac18f8d14021933af5cb81aec8b, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MaskTex:
-        m_Texture: {fileID: 2800000, guid: 64430cb3621fb4bca8ec39b7da097203, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _NormalMap:
@@ -54,11 +54,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - PixelSnap: 0
     - _EnableExternalAlpha: 0
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _Flip: {r: 1, g: 1, b: 1, a: 1}
-    - _GlowColor: {r: 4, g: 4, b: 4, a: 1}
+    - _GlowColor: {r: 8.586387, g: 3.2251306, b: 0.12565443, a: 0.9019608}
     - _RendererColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
