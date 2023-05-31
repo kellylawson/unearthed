@@ -8,7 +8,6 @@ public class Enemy : MonoBehaviour
 {
     [Header("Damage")]
     [SerializeField] int maxHealth = 100;
-    [SerializeField] ParticleSystem attackEffect;
 
     int currentHealth;
     Animator animator;
@@ -16,6 +15,7 @@ public class Enemy : MonoBehaviour
     protected Vector2 damageDirection = Vector2.left;
     protected bool dead = false;
     ParticleSystem[] damageEffects;
+
 
     // Start is called before the first frame update
     protected void Start()
@@ -29,8 +29,6 @@ public class Enemy : MonoBehaviour
     {
         currentHealth -= damage;
         tookDamage = true;
-        //attackEffect.Play();
-        PlayDamageEffects();
         damageDirection = direction > 0 ? Vector2.right : Vector2.left;
         if (currentHealth <= 0)
         {
@@ -47,14 +45,4 @@ public class Enemy : MonoBehaviour
         });
     }
 
-    private void PlayDamageEffects()
-    {
-        foreach (ParticleSystem effect in damageEffects)
-        {
-            if (effect.tag == "Damage Effect")
-            {
-                effect.Play();
-            }
-        }
-    }
 }

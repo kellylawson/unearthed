@@ -13,13 +13,17 @@ public class SentryController : Enemy
     [SerializeField] private float boundarySlopeAngle = 10f;
 
     [Header("Attack")]
-    [SerializeField] private float damagePauseTimer = 1f;
     [SerializeField] private float attackPauseTimer = 1.75f;
     [SerializeField] private float attackFrequencyTimer = 1f;
     [SerializeField] private float attackTriggerDistance = .3f;
     [SerializeField] private Transform attackPoint;
     [SerializeField] private float attackRange = .5f;
     [SerializeField] private float attackDamage = 75;
+
+    [Header("Damage")]
+    [SerializeField] private float damagePauseTimer = 1f;
+    [SerializeField] ParticleSystem damageEffect;
+
 
     Rigidbody2D spriteRigidBody;
     Animator spriteAnimator;
@@ -28,6 +32,8 @@ public class SentryController : Enemy
     float movePauseTimer = 0f;
     float attackTimer = 0f;
     bool triggerAttack = false;
+    const float effectRotationDefault = 315f;
+    const float effectRotationFlipped = 135f;
 
     new void Start()
     {
@@ -96,6 +102,9 @@ public class SentryController : Enemy
             {
                 FlipSprite();
             }
+
+            PlayDamageEffects(damageDirection);
+
             // Pause movement for a period when we are hit
             movePauseTimer = damagePauseTimer;
 
@@ -161,7 +170,9 @@ public class SentryController : Enemy
 
     private void FlipSprite()
     {
-        transform.localScale = new Vector2(-transform.localScale.x, 1f);
+        Vector3 localScale = transform.localScale;
+        localScale.x = -transform.localScale.x;
+        transform.localScale = localScale;
     }
 
     private void HitPlayer()
@@ -174,4 +185,19 @@ public class SentryController : Enemy
         }
     }
 
+    private void PlayDamageEffects(Vector2 damageDirection)
+    {
+        Vector3 transformRotation = damageEffect.transform.eulerAngles;
+        if (damageDirection == Vector2.left)
+        {
+            Debug.Log($"Flipping effect transform {effectRotationFlipped}");
+            damageEffect.transform.eulerAngles = new Vector3(transformRotation.x, transformRotation.y, effectRotationFlipped);
+        }
+        else
+        {
+            Debug.Log($"Default effect transform {effectRotationDefault}");
+            damageEffect.transform.eulerAngles = new Vector3(transformRotation.x, transformRotation.y, effectRotationDefault);
+        }
+        damageEffect.Play();
+    }
 }
