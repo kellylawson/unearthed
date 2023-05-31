@@ -16,6 +16,7 @@ public class SentryController : Enemy
     [SerializeField] private float attackPauseTimer = 1.75f;
     [SerializeField] private float attackFrequencyTimer = 1f;
     [SerializeField] private float attackTriggerDistance = .3f;
+    [SerializeField] private float rushTriggerDistance = 1f;
     [SerializeField] private Transform attackPoint;
     [SerializeField] private float attackRange = .5f;
     [SerializeField] private float attackDamage = 75;
@@ -82,7 +83,7 @@ public class SentryController : Enemy
         Debug.DrawRay(checkPosition, new Vector2(direction, 0) * attackTriggerDistance, Color.blue);
 
         // Attack the player if they are in range (allow taking damage to disrupt attack)
-        if (hit && !tookDamage)
+        if (hit)
         {
             triggerAttack = true;
             attackTimer = attackFrequencyTimer;
