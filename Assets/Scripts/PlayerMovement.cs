@@ -331,13 +331,13 @@ public class PlayerMovement : MonoBehaviour
     void LightAttackEffect()
     {
         attackEffect.Play();
-        HitEnemies(lightAttackDamage);
+        DamageEnemies(lightAttackDamage);
     }
 
     void HeavyAttackEffect()
     {
         attackEffect.Play();
-        HitEnemies(heavyAttackDamage);
+        DamageEnemies(heavyAttackDamage);
     }
 
     void ActivateRightWeaponTrail()
@@ -385,7 +385,7 @@ public class PlayerMovement : MonoBehaviour
         spriteRigidBody.gravityScale = spriteGravity;
     }
 
-    private void HitEnemies(int attackDamage)
+    private void DamageEnemies(int attackDamage)
     {
         Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, enemyMask);
 

@@ -16,7 +16,7 @@ public class SentryController : Enemy
     [SerializeField] private float attackPauseTimer = 1.75f;
     [SerializeField] private float attackFrequencyTimer = 1f;
     [SerializeField] private float attackTriggerDistance = .3f;
-    [SerializeField] private float rushTriggerDistance = 1f;
+    [SerializeField] private float rushTriggerDistance = 2f;
     [SerializeField] private Transform attackPoint;
     [SerializeField] private float attackRange = .5f;
     [SerializeField] private float attackDamage = 75;
@@ -31,10 +31,31 @@ public class SentryController : Enemy
     Collider2D spriteCollider;
     float velocity = 0f;
     float movePauseTimer = 0f;
-    float attackTimer = 0f;
+    float attackCooldownTimer = 0f;
     bool triggerAttack = false;
+    bool rushing = false;
     const float effectRotationDefault = 315f;
     const float effectRotationFlipped = 135f;
+
+    enum STATES
+    {
+        WALKING,
+        RUSHING,
+        ATTACK,
+        DAMAGED,
+        DEAD,
+        IDLE
+    };
+
+    STATES currentState = STATES.WALKING;
+    IDictionary<STATES, string> stateNames = new Dictionary<STATES, string>() {
+        {STATES.ATTACK, "attack"},
+        {STATES.DAMAGED, "damaged"},
+        {STATES.DEAD, "dead"},
+        {STATES.IDLE, "idle"},
+        {STATES.RUSHING, "rushing"},
+        {STATES.WALKING, "walking"}
+    };
 
     new void Start()
     {
@@ -47,48 +68,66 @@ public class SentryController : Enemy
 
     void FixedUpdate()
     {
+        CheckState();
         if (!dead)
         {
             HandleDamage();
-            Attack();
-            Move();
+            HandleAttack();
+            HandleMove();
         }
         HandleAnimation();
     }
 
-    void Move()
+    void CheckState()
+    {
+        string name;
+        if (!stateNames.TryGetValue(currentState, out name) || !spriteAnimator.GetCurrentAnimatorStateInfo(0).IsName(name))
+        {
+            Debug.Log($"Current state {name} doesn't match the animator state.");
+        }
+    }
+
+    void HandleMove()
     {
         movePauseTimer -= Time.deltaTime;
         if (movePauseTimer <= 0)
         {
             velocity = moveSpeed * Mathf.Sign(transform.localScale.x);
+            if (rushing)
+            {
+                velocity *= 2f;
+            }
             // Just move the sprite in their normal pattern
             if (BoundaryCheck())
             {
-                velocity = -velocity;
-                FlipSprite();
+                TurnAround();
             }
         }
         spriteRigidBody.velocity = new Vector2(velocity, spriteRigidBody.velocity.y);
     }
 
-    void Attack()
+    void HandleAttack()
     {
-        attackTimer -= Time.deltaTime;
-        if (attackTimer > 0) return;
+        attackCooldownTimer -= Time.deltaTime;
+        if (attackCooldownTimer > 0) return;
 
         float direction = defaultFacingLeft ? -Mathf.Sign(transform.localScale.x) : Mathf.Sign(transform.localScale.x);
         Vector2 checkPosition = spriteCollider.bounds.center + new Vector3(direction * spriteCollider.bounds.extents.x, 0);
-        RaycastHit2D hit = Physics2D.Raycast(checkPosition, new Vector2(direction, 0), attackTriggerDistance, playerMask);
+
+        RaycastHit2D hitAttack = Physics2D.Raycast(checkPosition, new Vector2(direction, 0), attackTriggerDistance, playerMask);
         Debug.DrawRay(checkPosition, new Vector2(direction, 0) * attackTriggerDistance, Color.blue);
 
+        RaycastHit2D hitRush = Physics2D.Raycast(checkPosition, new Vector2(direction, 0), rushTriggerDistance, playerMask);
+        Debug.DrawRay(checkPosition, new Vector2(direction, 0) * rushTriggerDistance, Color.green);
+
         // Attack the player if they are in range (allow taking damage to disrupt attack)
-        if (hit)
+        if (hitAttack)
         {
-            triggerAttack = true;
-            attackTimer = attackFrequencyTimer;
-            movePauseTimer = attackPauseTimer;
-            velocity = 0;
+            Attack();
+        }
+        else if (hitRush)
+        {
+            rushing = true;
         }
     }
 
@@ -138,8 +177,18 @@ public class SentryController : Enemy
         }
         else
         {
-            spriteAnimator.SetBool("walking", true);
+            spriteAnimator.SetBool("rushing", rushing);
+            spriteAnimator.SetBool("walking", !rushing);
         }
+    }
+
+    void Attack()
+    {
+        triggerAttack = true;
+        rushing = false;
+        attackCooldownTimer = attackFrequencyTimer;
+        movePauseTimer = attackPauseTimer;
+        velocity = 0;
     }
 
     private bool BoundaryCheck()
@@ -169,6 +218,13 @@ public class SentryController : Enemy
         }
     }
 
+    void TurnAround()
+    {
+        rushing = false;
+        velocity = -velocity;
+        FlipSprite();
+    }
+
     private void FlipSprite()
     {
         Vector3 localScale = transform.localScale;
@@ -176,7 +232,7 @@ public class SentryController : Enemy
         transform.localScale = localScale;
     }
 
-    private void HitPlayer()
+    private void DamagePlayer()
     {
         float direction = defaultFacingLeft ? -Mathf.Sign(transform.localScale.x) : Mathf.Sign(transform.localScale.x);
         Collider2D player = Physics2D.OverlapCircle(attackPoint.position, attackRange, playerMask);
