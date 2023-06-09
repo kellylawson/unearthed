@@ -5,7 +5,7 @@ using UnityEngine;
 public class SentryController : Enemy
 {
     [Header("Movement")]
-    [SerializeField] private float moveSpeed = 1.0f;
+    [SerializeField] private float defaultMoveSpeed = 1.0f;
     [SerializeField] private LayerMask groundMask;
     [SerializeField] private LayerMask playerMask;
     [SerializeField] private bool defaultFacingLeft = false;
@@ -13,7 +13,6 @@ public class SentryController : Enemy
     [SerializeField] private float boundarySlopeAngle = 10f;
 
     [Header("Attack")]
-    [SerializeField] private float attackPauseTimer = 1.75f;
     [SerializeField] private float attackFrequencyTimer = 1f;
     [SerializeField] private float attackTriggerDistance = .3f;
     [SerializeField] private float rushTriggerDistance = 2f;
@@ -22,7 +21,6 @@ public class SentryController : Enemy
     [SerializeField] private float attackDamage = 75;
 
     [Header("Damage")]
-    [SerializeField] private float damagePauseTimer = 1f;
     [SerializeField] ParticleSystem damageEffect;
 
 
@@ -30,32 +28,11 @@ public class SentryController : Enemy
     Animator spriteAnimator;
     Collider2D spriteCollider;
     float velocity = 0f;
-    float movePauseTimer = 0f;
     float attackCooldownTimer = 0f;
     bool triggerAttack = false;
     bool rushing = false;
     const float effectRotationDefault = 315f;
     const float effectRotationFlipped = 135f;
-
-    enum STATES
-    {
-        WALKING,
-        RUSHING,
-        ATTACK,
-        DAMAGED,
-        DEAD,
-        IDLE
-    };
-
-    STATES currentState = STATES.WALKING;
-    IDictionary<STATES, string> stateNames = new Dictionary<STATES, string>() {
-        {STATES.ATTACK, "attack"},
-        {STATES.DAMAGED, "damaged"},
-        {STATES.DEAD, "dead"},
-        {STATES.IDLE, "idle"},
-        {STATES.RUSHING, "rushing"},
-        {STATES.WALKING, "walking"}
-    };
 
     new void Start()
     {
@@ -63,12 +40,11 @@ public class SentryController : Enemy
         spriteRigidBody = GetComponent<Rigidbody2D>();
         spriteAnimator = GetComponent<Animator>();
         spriteCollider = GetComponent<Collider2D>();
-        velocity = moveSpeed;
+        velocity = defaultMoveSpeed;
     }
 
     void FixedUpdate()
     {
-        CheckState();
         if (!dead)
         {
             HandleDamage();
@@ -78,30 +54,11 @@ public class SentryController : Enemy
         HandleAnimation();
     }
 
-    void CheckState()
-    {
-        string name;
-        if (!stateNames.TryGetValue(currentState, out name) || !spriteAnimator.GetCurrentAnimatorStateInfo(0).IsName(name))
-        {
-            Debug.Log($"Current state {name} doesn't match the animator state.");
-        }
-    }
-
     void HandleMove()
     {
-        movePauseTimer -= Time.deltaTime;
-        if (movePauseTimer <= 0)
+        if (BoundaryCheck())
         {
-            velocity = moveSpeed * Mathf.Sign(transform.localScale.x);
-            if (rushing)
-            {
-                velocity *= 2f;
-            }
-            // Just move the sprite in their normal pattern
-            if (BoundaryCheck())
-            {
-                TurnAround();
-            }
+            TurnAround();
         }
         spriteRigidBody.velocity = new Vector2(velocity, spriteRigidBody.velocity.y);
     }
@@ -145,16 +102,13 @@ public class SentryController : Enemy
 
             PlayDamageEffects(damageDirection);
 
-            // Pause movement for a period when we are hit
-            movePauseTimer = damagePauseTimer;
-
             if (dead)
             {
                 spriteRigidBody.constraints = RigidbodyConstraints2D.FreezePositionX;
             }
             else
             {
-                velocity = -moveSpeed * Mathf.Sign(transform.localScale.x);
+                velocity = -defaultMoveSpeed * Mathf.Sign(transform.localScale.x);
             }
         }
     }
@@ -187,14 +141,12 @@ public class SentryController : Enemy
         triggerAttack = true;
         rushing = false;
         attackCooldownTimer = attackFrequencyTimer;
-        movePauseTimer = attackPauseTimer;
-        velocity = 0;
     }
 
     private bool BoundaryCheck()
     {
         // Use the sign of the velocity to determine which direction to start the raycast.
-        const float CHECK_COLLIDER_OFFSET = .02f;
+        const float CHECK_COLLIDER_OFFSET = .1f;
         Vector2 checkPosition = spriteCollider.bounds.center + new Vector3(Mathf.Sign(spriteRigidBody.velocity.x) * spriteCollider.bounds.extents.x, -spriteCollider.bounds.extents.y + CHECK_COLLIDER_OFFSET);
         RaycastHit2D hit = Physics2D.Raycast(checkPosition, Vector2.down, spriteCollider.bounds.extents.y + boundaryCheckDepth, groundMask);
         Debug.DrawRay(checkPosition, Vector2.down * boundaryCheckDepth, Color.red);
@@ -230,6 +182,22 @@ public class SentryController : Enemy
         Vector3 localScale = transform.localScale;
         localScale.x = -transform.localScale.x;
         transform.localScale = localScale;
+    }
+
+    void PauseMovement()
+    {
+        velocity = 0;
+    }
+
+    void ResumeMovement(int speedMultiplier)
+    {
+        velocity = defaultMoveSpeed * speedMultiplier * Mathf.Sign(transform.localScale.x);
+    }
+
+    void Hop(float force)
+    {
+        // Cause the character to move upward by the 'force' amount
+        spriteRigidBody.AddForce(new Vector2(0, force), ForceMode2D.Impulse);
     }
 
     private void DamagePlayer()
