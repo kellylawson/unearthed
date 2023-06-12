@@ -21,14 +21,15 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float slopeCheckDistance = 0.5f;
 
     [Header("Attack")]
-    [SerializeField] float lightAttackTimer = .5f;
-    [SerializeField] float heavyAttackTimer = .7f;
+    [SerializeField] float burstAttackTimer = .2f;
+    [SerializeField] float slashAttackTimer = .5f;
     [SerializeField] float attackRange = .5f;
     [SerializeField] Transform attackPoint;
     [SerializeField] LayerMask enemyMask;
-    [SerializeField] int lightAttackDamage = 25;
-    [SerializeField] int heavyAttackDamage = 40;
-    [SerializeField] ParticleSystem attackEffect;
+    [SerializeField] int burstAttackDamage = 25;
+    [SerializeField] int slashAttackDamage = 40;
+    [SerializeField] ParticleSystem burstAttackEffect;
+    [SerializeField] ParticleSystem slashAttackEffect;
 
     [Header("Health")]
     [SerializeField] float maxHealth = 500f;
@@ -130,7 +131,7 @@ public class PlayerMovement : MonoBehaviour
         if (attackTimer <= 0)
         {
             triggerLightAttack = true;
-            attackTimer = lightAttackTimer;
+            attackTimer = burstAttackTimer;
         }
     }
 
@@ -141,7 +142,7 @@ public class PlayerMovement : MonoBehaviour
         if (attackTimer <= 0)
         {
             triggerHeavyAttack = true;
-            attackTimer = heavyAttackTimer;
+            attackTimer = slashAttackTimer;
         }
     }
 
@@ -330,14 +331,14 @@ public class PlayerMovement : MonoBehaviour
 
     void LightAttackEffect()
     {
-        attackEffect.Play();
-        DamageEnemies(lightAttackDamage);
+        burstAttackEffect.Play();
+        DamageEnemies(burstAttackDamage);
     }
 
     void HeavyAttackEffect()
     {
-        attackEffect.Play();
-        DamageEnemies(heavyAttackDamage);
+        slashAttackEffect.Play();
+        DamageEnemies(slashAttackDamage);
     }
 
     void ActivateRightWeaponTrail()
@@ -411,7 +412,8 @@ public class PlayerMovement : MonoBehaviour
     {
         transform.localScale = new Vector2(Mathf.Sign(spriteRigidBody.velocity.x), 1f);
         // attackEffect.transform.localScale = new Vector3(Mathf.Sign(spriteRigidBody.velocity.x), 1f, 1f);
-        attackEffect.GetComponent<ParticleSystemRenderer>().flip = new Vector3(-Mathf.Sign(spriteRigidBody.velocity.x), 0, 0);
+        burstAttackEffect.GetComponent<ParticleSystemRenderer>().flip = new Vector3(-Mathf.Sign(spriteRigidBody.velocity.x), 0, 0);
+        slashAttackEffect.GetComponent<ParticleSystemRenderer>().flip = new Vector3(-Mathf.Sign(spriteRigidBody.velocity.x), 0, 0);
         FlipWeaponEffect(leftWeaponEffect);
         FlipWeaponEffect(rightWeaponEffect);
     }
