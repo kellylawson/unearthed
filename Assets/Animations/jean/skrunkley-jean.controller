@@ -62,7 +62,7 @@ AnimatorState:
   - {fileID: -2130047670183429497}
   - {fileID: -3618208588008977160}
   m_StateMachineBehaviours:
-  - {fileID: 698248029666205024}
+  - {fileID: -1025424618853184291}
   m_Position: {x: 50, y: 50, z: 0}
   m_IKOnFeet: 0
   m_WriteDefaultValues: 1
@@ -202,7 +202,7 @@ AnimatorStateTransition:
     m_EventTreshold: 0
   - m_ConditionMode: 6
     m_ConditionEvent: attackArm
-    m_EventTreshold: 0
+    m_EventTreshold: 2
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -5757257472720466406}
   m_Solo: 0
@@ -340,6 +340,20 @@ AnimatorState:
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 
+--- !u!114 &-1025424618853184291
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f19a0aaf413024a7c9a331ad33b82a97, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  paramName: attackArm
+  maxAttacks: 2
 --- !u!206 &-766402605886890059
 BlendTree:
   m_ObjectHideFlags: 1
@@ -547,20 +561,6 @@ AnimatorState:
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 
---- !u!114 &698248029666205024
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ccc16f8c4ef874d2ca2b3127c8c533bf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  paramName: attackArm
-  stateCount: 2
 --- !u!114 &730224925820229253
 MonoBehaviour:
   m_ObjectHideFlags: 1
