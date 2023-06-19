@@ -270,6 +270,8 @@ public class PlayerMovement : MonoBehaviour
 
     private void HandleKnockBack()
     {
+        if (!isAlive) return;
+
         if (knockBack && !grounded)
         {
             damageTaken = true;
@@ -327,6 +329,7 @@ public class PlayerMovement : MonoBehaviour
         spriteAnimator.SetTrigger("dead");
         isAlive = false;
         spriteRigidBody.velocity = Vector3.zero;
+        // spriteRigidBody.constraints = RigidbodyConstraints2D.FreezePosition;
     }
 
     void LightAttackEffect()

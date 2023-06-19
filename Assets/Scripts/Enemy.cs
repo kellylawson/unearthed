@@ -14,7 +14,6 @@ public class Enemy : MonoBehaviour
     protected bool tookDamage = false;
     protected Vector2 damageDirection = Vector2.left;
     protected bool dead = false;
-    ParticleSystem[] damageEffects;
 
 
     // Start is called before the first frame update
@@ -22,7 +21,6 @@ public class Enemy : MonoBehaviour
     {
         currentHealth = maxHealth;
         animator = GetComponent<Animator>();
-        damageEffects = GetComponentsInChildren<ParticleSystem>();
     }
 
     public void TakeDamage(int damage, float direction)
