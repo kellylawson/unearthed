@@ -23,6 +23,7 @@ public class PlayerMovement : MonoBehaviour
     [Header("Attack")]
     [SerializeField] float burstAttackTimer = .2f;
     [SerializeField] float slashAttackTimer = .5f;
+    [SerializeField] float comboThresholdTimer = .5f;
     [SerializeField] float attackRange = .5f;
     [SerializeField] Transform attackPoint;
     [SerializeField] LayerMask enemyMask;
@@ -68,6 +69,7 @@ public class PlayerMovement : MonoBehaviour
     Vector2 damagedFrom;
     bool knockBack = false;
     bool damageTaken = false;
+    float comboTimer;
 
 
     void Start()
@@ -128,11 +130,19 @@ public class PlayerMovement : MonoBehaviour
     {
         if (!isAlive || knockBack) return;
 
+        if (comboTimer <= 0)
+        {
+            // If the attack hasn't come within the combo threshold, reset the combo animation param.
+            spriteAnimator.SetInteger("attackArm", 1);
+        }
+
         if (attackTimer <= 0)
         {
             triggerLightAttack = true;
             attackTimer = burstAttackTimer;
+            comboTimer = comboThresholdTimer;
         }
+
     }
 
     void OnHeavyAttack()
@@ -266,6 +276,7 @@ public class PlayerMovement : MonoBehaviour
     private void HandleAttack()
     {
         attackTimer -= Time.deltaTime;
+        comboTimer -= Time.deltaTime;
     }
 
     private void HandleKnockBack()
@@ -329,7 +340,6 @@ public class PlayerMovement : MonoBehaviour
         spriteAnimator.SetTrigger("dead");
         isAlive = false;
         spriteRigidBody.velocity = Vector3.zero;
-        // spriteRigidBody.constraints = RigidbodyConstraints2D.FreezePosition;
     }
 
     void LightAttackEffect()
@@ -414,7 +424,6 @@ public class PlayerMovement : MonoBehaviour
     private void FlipSprite()
     {
         transform.localScale = new Vector2(Mathf.Sign(spriteRigidBody.velocity.x), 1f);
-        // attackEffect.transform.localScale = new Vector3(Mathf.Sign(spriteRigidBody.velocity.x), 1f, 1f);
         burstAttackEffect.GetComponent<ParticleSystemRenderer>().flip = new Vector3(-Mathf.Sign(spriteRigidBody.velocity.x), 0, 0);
         slashAttackEffect.GetComponent<ParticleSystemRenderer>().flip = new Vector3(-Mathf.Sign(spriteRigidBody.velocity.x), 0, 0);
         FlipWeaponEffect(leftWeaponEffect);
